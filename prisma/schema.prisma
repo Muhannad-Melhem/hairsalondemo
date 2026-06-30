@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ── Auth / Users ─────────────────────────────────────────
+
+enum Role {
+  admin
+  editor
+  customer
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String?
+  role          Role      @default(customer)
+  avatar        String?
+  emailVerified DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+
+  @@map("users")
+}
+
+// ── Business Tables ──────────────────────────────────────
+
+model Service {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  duration    Int      // minutes
+  price       Float    // stored as decimal (Float is fine for SQLite; use Decimal for PG)
+  category    String
+  image       String?
+  featured    Boolean  @default(false)
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  bookings Booking[]
+
+  @@index([category])
+  @@index([active])
+  @@map("services")
+}
+
+model Stylist {
+  id          String   @id @default(cuid())
+  name        String
+  title       String
+  bio         String?
+  specialties String   @default("[]") // JSON array stored as string
+  experience  Int      @default(0)
+  image       String?
+  instagram   String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  bookings     Booking[]
+  galleryItems GalleryItem[]
+
+  @@index([active])
+  @@map("stylists")
+}
+
+model GalleryItem {
+  id        String   @id @default(cuid())
+  src       String
+  alt       String
+  category  String
+  stylistId String?
+  createdAt DateTime @default(now())
+
+  stylist Stylist? @relation(fields: [stylistId], references: [id], onDelete: SetNull)
+
+  @@index([category])
+  @@map("gallery_items")
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  role      String?
+  avatar    String?
+  rating    Int      @default(5)
+  content   String
+  featured  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("testimonials")
+}
+
+model Booking {
+  id            String   @id @default(cuid())
+  serviceId     String
+  stylistId     String?
+  date          String   // ISO date string (YYYY-MM-DD)
+  time          String   // HH:mm
+  customerName  String
+  customerEmail String
+  customerPhone String
+  notes         String?
+  status        String   @default("pending") // pending | confirmed | cancelled | completed
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  service Service  @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  stylist Stylist? @relation(fields: [stylistId], references: [id], onDelete: SetNull)
+
+  @@index([date])
+  @@index([status])
+  @@index([customerEmail])
+  @@map("bookings")
+}
+
+model FAQ {
+  id        String   @id @default(cuid())
+  question  String
+  answer    String
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([order])
+  @@map("faqs")
+}
+
+model SiteSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String   // JSON-encoded value
+  updatedAt DateTime @updatedAt
+
+  @@map("site_settings")
+}

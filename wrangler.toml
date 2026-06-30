@@ -1,0 +1,13 @@
+name = "luxe-hair-studio"
+compatibility_date = "2026-06-01"
+compatibility_flags = ["nodejs_compat"]
+
+pages_build_output_dir = ".next"
+
+[env.production]
+vars = { NEXT_PUBLIC_SITE_URL = "https://luxehairstudio.com" }
+
+[[redirects]]
+from = "/booking"
+to = "/booking"
+status = 200

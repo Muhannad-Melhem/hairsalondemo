@@ -1,0 +1,36 @@
+export const SITE = {
+  name: "Luxe Hair Studio",
+  tagline: "Where Style Meets Precision",
+  description: "Premium hair salon offering expert cuts, color, and treatments in an atmosphere of refined luxury.",
+  url: "https://luxehairstudio.com",
+  logo: "/images/logo.svg",
+  phone: "+1 (555) 555-0123",
+  email: "hello@luxehairstudio.com",
+  address: {
+    street: "128 King Street West",
+    city: "Toronto",
+    region: "ON",
+    postcode: "M5V 1K4",
+    country: "CA",
+  },
+  hours: [
+    { day: "Mon — Fri", hours: "9:00 AM — 7:00 PM" },
+    { day: "Saturday", hours: "10:00 AM — 5:00 PM" },
+    { day: "Sunday", hours: "10:00 AM — 3:00 PM" },
+  ],
+  social: {
+    instagram: "https://instagram.com/luxehairstudio",
+    facebook: "https://facebook.com/luxehairstudio",
+    tiktok: "https://tiktok.com/@luxehairstudio",
+    pinterest: "https://pinterest.com/luxehairstudio",
+    whatsapp: "https://wa.me/15555550123",
+  },
+  navItems: [
+    { label: "Home", href: "/" },
+    { label: "Services", href: "/services" },
+    { label: "Gallery", href: "/gallery" },
+    { label: "Stylists", href: "/stylists" },
+    { label: "About", href: "/about" },
+    { label: "Contact", href: "/contact" },
+  ],
+};
