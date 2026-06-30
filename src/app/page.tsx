@@ -81,7 +81,7 @@ const transformations = [
     alt: "Color transformation before",
   },
   {
-    src: "https://images.unsplash.com/photo-1567894340315-735d7c361db7?w=600&q=80",
+    src: "https://images.unsplash.com/photo-1707812343087-c9ff9e5abb43?w=600&q=80",
     alt: "Cut transformation before",
   },
   {

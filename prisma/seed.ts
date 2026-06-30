@@ -63,8 +63,8 @@ async function main() {
 
   const galleryItems = [
     { src: "https://images.unsplash.com/photo-1560066984-138dadb4c035?w=800", alt: "Modern balayage highlights", category: "color" },
-    { src: "https://images.unsplash.com/photo-1521590832167-161bc6e1f42f?w=800", alt: "Elegant bridal updo", category: "occasions" },
-    { src: "https://images.unsplash.com/photo-1596724467927-53bd2cba22d2?w=800", alt: "Precision haircut", category: "haircuts" },
+    { src: "https://images.unsplash.com/photo-1701976333339-1d41dad8138b?w=800", alt: "Elegant bridal updo", category: "occasions" },
+    { src: "https://images.unsplash.com/photo-1634449571017-5fecfd26ad76?w=800", alt: "Precision haircut", category: "haircuts" },
     { src: "https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=800", alt: "Blowout styling", category: "styling" },
   ];
 

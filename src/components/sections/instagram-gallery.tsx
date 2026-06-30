@@ -11,7 +11,7 @@ const images = [
     alt: "Balayage hair color",
   },
   {
-    src: "https://images.unsplash.com/photo-1567894340315-735d7c361db7?w=400&q=80",
+    src: "https://images.unsplash.com/photo-1707812343087-c9ff9e5abb43?w=400&q=80",
     alt: "Haircut styling",
   },
   {
@@ -27,7 +27,7 @@ const images = [
     alt: "Salon interior",
   },
   {
-    src: "https://images.unsplash.com/photo-1633681926026-84c23e8cb2d6?w=400&q=80",
+    src: "https://images.unsplash.com/photo-1722935408489-2bf93349c8cb?w=400&q=80",
     alt: "Hair styling session",
   },
 ];

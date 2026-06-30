@@ -14,7 +14,7 @@ const services = [
     price: 85,
     duration: 60,
     image:
-      "https://images.unsplash.com/photo-1567894340315-735d7c361db7?w=600&q=80",
+      "https://images.unsplash.com/photo-1707812343087-c9ff9e5abb43?w=600&q=80",
   },
   {
     title: "Color & Balayage",
