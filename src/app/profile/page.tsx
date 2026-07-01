@@ -34,6 +34,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     if (session?.user?.email) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setLoadingBookings(true);
       api.get<{ bookings: Booking[] }>("/api/bookings")
         .then((data) => {

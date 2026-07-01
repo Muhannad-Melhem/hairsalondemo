@@ -1,6 +1,6 @@
 "use client";
 
-import { useReducedMotion, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
 import {
   Accordion,
@@ -9,6 +9,7 @@ import {
   AccordionContent,
 } from "@radix-ui/react-accordion";
 import { ArrowRight, Plus } from "lucide-react";
+import { fadeUp, staggerContainer, easePremium } from "@/lib/animation";
 
 const faqs = [
   {
@@ -39,51 +40,51 @@ const faqs = [
 ];
 
 export function FAQPreview() {
-  const prefersReduced = useReducedMotion();
-
   return (
     <section aria-label="Frequently asked questions" className="py-24 sm:py-32">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 20 }}
-          whileInView={prefersReduced ? {} : { opacity: 1, y: 0 }}
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0, 1] as const }}
           className="text-center"
         >
-          <h2 className="font-heading text-4xl leading-tight text-foreground sm:text-5xl">
+          <span className="font-heading text-xs font-semibold tracking-[0.25em] text-primary uppercase">
+            FAQ
+          </span>
+          <h2 className="mt-4 font-heading text-4xl leading-tight text-foreground sm:text-5xl">
             Frequently Asked Questions
           </h2>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mt-3 text-muted-foreground">
             Everything you need to know before your visit.
           </p>
         </motion.div>
 
-        <div className="mt-16 space-y-3">
+        <motion.div
+          className="mt-16 space-y-3"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+        >
           <Accordion type="single" collapsible className="space-y-3">
             {faqs.map((faq, i) => (
-              <motion.div
-                key={faq.question}
-                initial={
-                  prefersReduced ? { opacity: 1 } : { opacity: 0, y: 20 }
-                }
-                whileInView={prefersReduced ? {} : { opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{
-                  duration: 0.5,
-                  delay: i * 0.1,
-                  ease: [0.25, 0.1, 0, 1] as const,
-                }}
-              >
+              <motion.div key={faq.question} variants={fadeUp}>
                 <AccordionItem
                   value={`item-${i}`}
-                  className="rounded-xl border border-border/50 bg-card transition-shadow data-[state=open]:shadow-md"
+                  className="rounded-xl border border-border/30 bg-card transition-shadow data-[state=open]:shadow-md"
                 >
-                  <AccordionTrigger className="group flex w-full items-center justify-between px-6 py-4 text-left font-heading text-base text-foreground transition-colors hover:text-primary">
-                    {faq.question}
+                  <AccordionTrigger className="group flex w-full items-center justify-between px-6 py-4 text-left font-heading text-base transition-colors data-[state=open]:text-primary text-foreground hover:text-primary">
+                    <motion.span
+                      layout
+                      transition={{ duration: 0.3, ease: easePremium }}
+                    >
+                      {faq.question}
+                    </motion.span>
                     <Plus className="size-4 shrink-0 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-45" />
                   </AccordionTrigger>
-                  <AccordionContent className="overflow-hidden data-[state=closed]:animate-[accordion-up_200ms_ease] data-[state=open]:animate-[accordion-down_200ms_ease]">
+                  <AccordionContent className="overflow-hidden data-[state=closed]:animate-[accordion-up_250ms_ease] data-[state=open]:animate-[accordion-down_250ms_ease]">
                     <div className="px-6 pb-4 text-sm leading-relaxed text-muted-foreground">
                       {faq.answer}
                     </div>
@@ -92,21 +93,21 @@ export function FAQPreview() {
               </motion.div>
             ))}
           </Accordion>
-        </div>
+        </motion.div>
 
         <motion.div
-          initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 20 }}
-          whileInView={prefersReduced ? {} : { opacity: 1, y: 0 }}
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.3, ease: [0.25, 0.1, 0, 1] as const }}
           className="mt-12 text-center"
         >
           <Link
             href="/faq"
-            className="group inline-flex items-center gap-2 font-heading text-sm font-medium tracking-wider text-foreground uppercase transition-colors hover:text-primary"
+            className="group inline-flex items-center gap-2 font-heading text-xs font-semibold tracking-[0.2em] text-foreground uppercase transition-colors hover:text-primary"
           >
             View All FAQs
-            <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
+            <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-1" />
           </Link>
         </motion.div>
       </div>

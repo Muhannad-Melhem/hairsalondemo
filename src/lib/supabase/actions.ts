@@ -1,7 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
 import { getServices, getStylists, createBooking } from "@/lib/db";
 import { sendBookingConfirmation, sendAdminBookingNotification } from "@/lib/email";
 

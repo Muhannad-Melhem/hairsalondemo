@@ -7,7 +7,6 @@ import type {
   Testimonial,
   Booking,
   FAQItem,
-  Profile,
 } from "@/types";
 
 // ── Users / Auth ─────────────────────────────────────────
@@ -303,7 +302,7 @@ export async function getBookings(opts?: {
       take: limit,
       include: { service: { select: { name: true } }, stylist: { select: { name: true } } },
     } as Parameters<typeof prisma.booking.findMany>[0]),
-    prisma.booking.count({ where: where as any }),
+    prisma.booking.count({ where }) as Promise<number>,
   ]);
 
   return {

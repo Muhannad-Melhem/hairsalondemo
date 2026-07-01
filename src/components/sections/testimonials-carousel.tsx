@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useReducedMotion, motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, Quote } from "lucide-react";
+import { fadeUp, easePremium } from "@/lib/animation";
 
 const testimonials = [
   {
@@ -11,6 +12,7 @@ const testimonials = [
     name: "Sarah Mitchell",
     role: "Regular Client",
     rating: 5,
+    avatar: "SM",
   },
   {
     content:
@@ -18,6 +20,7 @@ const testimonials = [
     name: "Jessica Chen",
     role: "Color Client",
     rating: 5,
+    avatar: "JC",
   },
   {
     content:
@@ -25,20 +28,18 @@ const testimonials = [
     name: "Amanda Foster",
     role: "Loyal Client since 2019",
     rating: 5,
+    avatar: "AF",
   },
 ];
 
 const slideVariants = {
   enter: (direction: number) => ({
-    x: direction > 0 ? 300 : -300,
+    x: direction > 0 ? 200 : -200,
     opacity: 0,
   }),
-  center: {
-    x: 0,
-    opacity: 1,
-  },
+  center: { x: 0, opacity: 1 },
   exit: (direction: number) => ({
-    x: direction > 0 ? -300 : 300,
+    x: direction > 0 ? -200 : 200,
     opacity: 0,
   }),
 };
@@ -63,21 +64,17 @@ export function TestimonialsCarousel() {
       clearInterval(intervalRef.current);
     }
     if (!prefersReduced && !isPaused) {
-      intervalRef.current = setInterval(() => {
-        paginate(1);
-      }, 5000);
+      intervalRef.current = setInterval(() => paginate(1), 6000);
     }
   }, [paginate, prefersReduced, isPaused]);
 
   useEffect(() => {
     if (prefersReduced) return;
-    intervalRef.current = setInterval(() => {
-      paginate(1);
-    }, 5000);
+    intervalRef.current = setInterval(() => paginate(1), 6000);
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [paginate, prefersReduced]);
+  }, [prefersReduced, paginate]);
 
   const handlePaginate = useCallback(
     (dir: number) => {
@@ -101,26 +98,29 @@ export function TestimonialsCarousel() {
     <section aria-label="Testimonials" className="py-24 sm:py-32">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
-          initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 20 }}
-          whileInView={prefersReduced ? {} : { opacity: 1, y: 0 }}
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0, 1] }}
           className="text-center"
         >
-          <h2 className="font-heading text-4xl leading-tight text-foreground sm:text-5xl">
+          <span className="font-heading text-xs font-semibold tracking-[0.25em] text-primary uppercase">
+            Testimonials
+          </span>
+          <h2 className="mt-4 font-heading text-4xl leading-tight text-foreground sm:text-5xl">
             What Our Clients Say
           </h2>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mt-3 text-muted-foreground">
             Real stories from real people who trust us with their hair.
           </p>
         </motion.div>
 
         <motion.div
-          initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 30 }}
-          whileInView={prefersReduced ? {} : { opacity: 1, y: 0 }}
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
           viewport={{ once: true }}
-          transition={{ duration: 0.7, delay: 0.2, ease: [0.25, 0.1, 0, 1] }}
-          className="relative mx-auto mt-16 max-w-3xl"
+          className="relative mx-auto mt-16 max-w-2xl"
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => {
             setIsPaused(false);
@@ -136,10 +136,19 @@ export function TestimonialsCarousel() {
           aria-label="Client testimonials"
         >
           <div
-            className="relative min-h-[280px] overflow-hidden rounded-2xl border border-border/50 bg-card p-8 sm:p-12"
+            className="relative overflow-hidden rounded-2xl border border-border/30 bg-card p-10 sm:p-14"
             aria-live="polite"
             aria-atomic="true"
           >
+            <motion.div
+              initial={prefersReduced ? {} : { clipPath: "inset(0 100% 0 0)" }}
+              whileInView={{ clipPath: "inset(0 0% 0 0)" }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.2, ease: easePremium }}
+              className="absolute top-6 left-6"
+            >
+              <Quote className="size-8 text-primary/10" />
+            </motion.div>
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={index}
@@ -151,33 +160,36 @@ export function TestimonialsCarousel() {
                 transition={
                   prefersReduced
                     ? {}
-                    : { duration: 0.4, ease: [0.25, 0.1, 0, 1] }
+                    : { duration: 0.35, ease: [0.16, 1, 0.3, 1] }
                 }
                 className="text-center"
                 role="group"
                 aria-roledescription="slide"
                 aria-label={`Testimonial ${index + 1} of ${testimonials.length}`}
               >
-                <div className="flex justify-center gap-1">
+                <div className="flex items-center justify-center gap-1 mb-6">
                   {Array.from({ length: testimonial.rating }).map((_, i) => (
                     <Star
                       key={i}
-                      className="size-5 fill-primary text-primary"
+                      className="size-4 fill-primary text-primary"
                     />
                   ))}
                 </div>
-                <blockquote className="mt-6 text-lg leading-relaxed text-foreground/90 sm:text-xl">
+                <blockquote className="text-lg leading-relaxed text-foreground/80 sm:text-xl">
                   &ldquo;{testimonial.content}&rdquo;
                 </blockquote>
-                <div className="mt-8">
-                  <cite className="not-italic">
-                    <span className="font-heading text-foreground">
+                <div className="mt-8 flex items-center justify-center gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
+                    {testimonial.avatar}
+                  </div>
+                  <div className="text-left">
+                    <cite className="not-italic font-heading text-sm text-foreground">
                       {testimonial.name}
-                    </span>
-                    <span className="ml-2 text-sm text-muted-foreground">
-                      — {testimonial.role}
-                    </span>
-                  </cite>
+                    </cite>
+                    <p className="text-xs text-muted-foreground">
+                      {testimonial.role}
+                    </p>
+                  </div>
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -185,17 +197,17 @@ export function TestimonialsCarousel() {
 
           <button
             onClick={() => handlePaginate(-1)}
-            className="absolute top-1/2 -left-4 -translate-y-1/2 rounded-full border border-border/50 bg-background p-2 text-foreground shadow-sm transition-colors hover:bg-muted"
+            className="absolute top-1/2 -left-3 -translate-y-1/2 rounded-full border border-border/30 bg-background p-2 text-foreground shadow-sm transition-all hover:bg-muted hover:shadow-md"
             aria-label="Previous testimonial"
           >
-            <ChevronLeft className="size-5" />
+            <ChevronLeft className="size-4" />
           </button>
           <button
             onClick={() => handlePaginate(1)}
-            className="absolute top-1/2 -right-4 -translate-y-1/2 rounded-full border border-border/50 bg-background p-2 text-foreground shadow-sm transition-colors hover:bg-muted"
+            className="absolute top-1/2 -right-3 -translate-y-1/2 rounded-full border border-border/30 bg-background p-2 text-foreground shadow-sm transition-all hover:bg-muted hover:shadow-md"
             aria-label="Next testimonial"
           >
-            <ChevronRight className="size-5" />
+            <ChevronRight className="size-4" />
           </button>
 
           <div className="mt-8 flex justify-center gap-2">
@@ -203,10 +215,10 @@ export function TestimonialsCarousel() {
               <button
                 key={i}
                 onClick={() => handleDotClick(i)}
-                className={`h-2 rounded-full transition-all ${
+                className={`rounded-full transition-all ${
                   i === index
-                    ? "w-8 bg-primary"
-                    : "w-2 bg-border hover:bg-muted-foreground/40"
+                    ? "w-8 h-2 bg-primary"
+                    : "w-2 h-2 bg-border hover:bg-muted-foreground/40"
                 }`}
                 aria-label={`Go to testimonial ${i + 1}`}
               />

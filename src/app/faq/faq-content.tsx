@@ -3,12 +3,13 @@
 import { useState, useMemo } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import * as Accordion from "@radix-ui/react-accordion";
 import { Search, ChevronDown, HelpCircle, ArrowRight, MessageCircle } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { faqs } from "@/lib/data";
 import { cn } from "@/lib/utils";
+import { fadeUp, staggerContainerSlow } from "@/lib/animation";
 
 function FAQSchema() {
   const schema = {
@@ -35,7 +36,6 @@ function FAQSchema() {
 export function FAQContent() {
   const [search, setSearch] = useState("");
   const [openItem, setOpenItem] = useState<string>("");
-  const prefersReduced = useReducedMotion();
 
   const filtered = useMemo(
     () =>
@@ -53,8 +53,8 @@ export function FAQContent() {
 
       <section className="relative flex min-h-[50vh] items-center justify-center overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=80"
-          alt="FAQ"
+          src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=85"
+          alt=""
           fill
           priority
           className="object-cover"
@@ -63,18 +63,15 @@ export function FAQContent() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70" />
         <motion.div
           className="relative z-10 mx-auto max-w-3xl px-4 text-center sm:px-6"
-          initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.25, 0.1, 0, 1] }}
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
         >
-          <HelpCircle className="mx-auto mb-4 size-8 text-primary" />
           <h1 className="font-heading text-4xl text-white sm:text-5xl md:text-6xl">
             Frequently Asked Questions
           </h1>
-          <p className="mt-4 text-lg text-white/80">
-            Everything you need to know about visiting {search ? "" : "our salon"}.
-            Can&apos;t find what you&apos;re looking for? Reach out and we&apos;ll
-            be happy to help.
+          <p className="mt-4 text-lg text-white/70">
+            Everything you need to know before your visit.
           </p>
         </motion.div>
       </section>
@@ -90,7 +87,7 @@ export function FAQContent() {
               setSearch(e.target.value);
               setOpenItem("");
             }}
-            className="h-12 w-full rounded-full border border-border bg-background pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+            className="h-12 w-full rounded-xl border border-border bg-background pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
         </div>
 
@@ -103,7 +100,7 @@ export function FAQContent() {
         >
           {filtered.length === 0 ? (
             <div className="py-16 text-center">
-              <HelpCircle className="mx-auto size-10 text-muted-foreground/50" />
+              <HelpCircle className="mx-auto size-8 text-muted-foreground/50" />
               <p className="mt-4 text-muted-foreground">
                 No questions found for &ldquo;{search}&rdquo;
               </p>
@@ -115,43 +112,38 @@ export function FAQContent() {
               </button>
             </div>
           ) : (
-            filtered.map((faq, i) => (
-              <motion.div
-                key={faq.id}
-                initial={
-                  prefersReduced ? { opacity: 1 } : { opacity: 0, y: 10 }
-                }
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{
-                  duration: 0.4,
-                  delay: i * 0.03,
-                  ease: [0.25, 0.1, 0, 1],
-                }}
-              >
-                <Accordion.Item
-                  value={faq.id}
-                  className="group rounded-xl border border-border/50 bg-card transition-all hover:border-border data-[state=open]:border-primary/30 data-[state=open]:shadow-sm"
-                >
-                  <Accordion.Header className="flex">
-                    <Accordion.Trigger className="flex flex-1 items-center justify-between px-5 py-4 text-left text-sm font-medium text-foreground transition-colors hover:text-primary data-[state=open]:text-primary">
-                      <span>{faq.question}</span>
-                      <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180" />
-                    </Accordion.Trigger>
-                  </Accordion.Header>
-                  <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-                    <div className="px-5 pb-4 text-sm leading-relaxed text-muted-foreground">
-                      {faq.answer}
-                    </div>
-                  </Accordion.Content>
-                </Accordion.Item>
-              </motion.div>
-            ))
+            <motion.div
+              variants={staggerContainerSlow}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+            >
+              {filtered.map((faq) => (
+                <motion.div key={faq.id} variants={fadeUp}>
+                  <Accordion.Item
+                    value={faq.id}
+                    className="group rounded-xl border border-border/30 bg-card transition-all hover:border-border data-[state=open]:border-primary/30 data-[state=open]:shadow-sm"
+                  >
+                    <Accordion.Header className="flex">
+                      <Accordion.Trigger className="flex flex-1 items-center justify-between px-5 py-4 text-left text-sm font-medium text-foreground transition-colors hover:text-primary data-[state=open]:text-primary">
+                        <span>{faq.question}</span>
+                        <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180" />
+                      </Accordion.Trigger>
+                    </Accordion.Header>
+                    <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+                      <div className="px-5 pb-4 text-sm leading-relaxed text-muted-foreground">
+                        {faq.answer}
+                      </div>
+                    </Accordion.Content>
+                  </Accordion.Item>
+                </motion.div>
+              ))}
+            </motion.div>
           )}
         </Accordion.Root>
 
-        <div className="mt-16 rounded-2xl border border-border/50 bg-muted/30 p-8 text-center sm:p-10">
-          <MessageCircle className="mx-auto size-8 text-primary" />
+        <div className="mt-16 rounded-2xl border border-border/30 bg-muted/30 p-8 text-center sm:p-10">
+          <MessageCircle className="mx-auto size-7 text-primary" />
           <h3 className="mt-4 font-heading text-xl text-foreground">
             Still have questions?
           </h3>

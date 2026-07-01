@@ -2,12 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import * as Dialog from "@radix-ui/react-dialog";
-import { X, ChevronLeft, ChevronRight, ImageIcon } from "lucide-react";
+import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { galleryItems, galleryCategories } from "@/lib/data";
 import { cn } from "@/lib/utils";
-import type { GalleryItem } from "@/types";
 
 function Lightbox({
   items,
@@ -16,7 +15,7 @@ function Lightbox({
   onPrev,
   onNext,
 }: {
-  items: GalleryItem[];
+  items: { id: string; src: string; alt: string; stylist?: string }[];
   currentIndex: number;
   onClose: () => void;
   onPrev: () => void;
@@ -29,11 +28,10 @@ function Lightbox({
       if (e.key === "ArrowRight") onNext();
     };
     window.addEventListener("keydown", handleKey);
-    const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
       window.removeEventListener("keydown", handleKey);
-      document.body.style.overflow = prev;
+      document.body.style.overflow = "";
     };
   }, [onClose, onPrev, onNext]);
 
@@ -43,10 +41,15 @@ function Lightbox({
     <Dialog.Root open onOpenChange={onClose}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out" />
-        <Dialog.Content className="fixed inset-0 z-50 flex items-center justify-center p-4 focus-visible:outline-none">
+        <Dialog.Content
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 focus-visible:outline-none"
+          onPointerDown={(e) => {
+            if (e.target === e.currentTarget) onClose();
+          }}
+        >
           <button
             onClick={onClose}
-            className="absolute right-4 top-4 z-10 flex size-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+            className="absolute right-4 top-4 z-20 flex size-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
             aria-label="Close lightbox"
           >
             <X className="size-5" />
@@ -54,7 +57,7 @@ function Lightbox({
 
           <button
             onClick={onPrev}
-            className="absolute left-4 z-10 flex size-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+            className="absolute left-4 z-20 flex size-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
             aria-label="Previous image"
           >
             <ChevronLeft className="size-5" />
@@ -62,7 +65,7 @@ function Lightbox({
 
           <button
             onClick={onNext}
-            className="absolute right-20 top-1/2 z-10 flex size-10 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20 max-sm:hidden"
+            className="absolute right-4 z-20 flex size-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50"
             aria-label="Next image"
           >
             <ChevronRight className="size-5" />
@@ -74,7 +77,7 @@ function Lightbox({
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
               className="relative max-h-[85vh] max-w-[90vw]"
             >
               <Image
@@ -104,60 +107,10 @@ function Lightbox({
   );
 }
 
-function GalleryImage({
-  item,
-  index,
-  onClick,
-}: {
-  item: GalleryItem;
-  index: number;
-  onClick: () => void;
-}) {
-  const prefersReduced = useReducedMotion();
-
-  return (
-    <motion.div
-      initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.5, delay: index * 0.05, ease: [0.25, 0.1, 0, 1] }}
-      className={cn(
-        "group relative cursor-pointer overflow-hidden rounded-xl",
-        index % 5 === 0 ? "sm:col-span-2 sm:row-span-2" : "",
-        index % 7 === 3 ? "sm:col-span-2" : "",
-      )}
-      onClick={onClick}
-    >
-      <div className="relative h-64 sm:h-full min-h-[200px]">
-        <Image
-          src={item.src}
-          alt={item.alt}
-          fill
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover transition-all duration-500 group-hover:scale-105"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/30" />
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <div className="rounded-full bg-white/20 p-3 backdrop-blur-sm">
-            <ImageIcon className="size-5 text-white" />
-          </div>
-        </div>
-        <div className="absolute bottom-0 left-0 right-0 translate-y-full p-3 transition-transform duration-300 group-hover:translate-y-0">
-          <span className="inline-block rounded-full bg-primary/90 px-2.5 py-0.5 text-xs font-medium text-primary-foreground backdrop-blur-sm">
-            {item.category}
-          </span>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
 export function GalleryContent() {
   const [activeCat, setActiveCat] = useState("All");
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const prefersReduced = useReducedMotion();
 
   const filtered =
     activeCat === "All"
@@ -183,8 +136,8 @@ export function GalleryContent() {
     <>
       <section className="relative flex min-h-[50vh] items-center justify-center overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=1920&q=80"
-          alt="Gallery"
+          src="https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?w=1920&q=85"
+          alt=""
           fill
           priority
           className="object-cover"
@@ -193,14 +146,14 @@ export function GalleryContent() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70" />
         <motion.div
           className="relative z-10 mx-auto max-w-3xl px-4 text-center sm:px-6"
-          initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.25, 0.1, 0, 1] }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
           <h1 className="font-heading text-4xl text-white sm:text-5xl md:text-6xl">
             Our Work
           </h1>
-          <p className="mt-4 text-lg text-white/80">
+          <p className="mt-4 text-lg text-white/70">
             A curated look at our craft — each image tells the story of a
             collaboration between artist and client.
           </p>
@@ -227,24 +180,30 @@ export function GalleryContent() {
 
         <motion.div
           key={activeCat}
-          initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          transition={{ duration: 0.3 }}
           className="columns-1 gap-4 sm:columns-2 lg:columns-3 [&>div]:mb-4 [&>div]:break-inside-avoid"
         >
           {filtered.map((item, i) => (
             <motion.div
               key={item.id}
-              initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
               transition={{
-                duration: 0.5,
-                delay: i * 0.05,
-                ease: [0.25, 0.1, 0, 1],
+                duration: 0.4,
+                delay: i * 0.03,
+                ease: [0.16, 1, 0.3, 1],
               }}
               className="group relative cursor-pointer overflow-hidden rounded-xl"
               onClick={() => openLightbox(i)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") openLightbox(i);
+              }}
+              aria-label={`View ${item.alt}`}
             >
               <Image
                 src={item.src}

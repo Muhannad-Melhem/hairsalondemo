@@ -3,10 +3,12 @@ import { Playfair_Display, Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import { SITE } from "@/lib/constants";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { LenisProvider } from "@/components/providers/lenis-provider";
+import { SessionProvider } from "@/components/providers/session-provider";
+import { SkipToContent } from "@/components/ui/skip-to-content";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { SessionProvider } from "@/components/providers/session-provider";
+import { PageTransition } from "@/components/layout/page-transition";
+import { ScrollProvider } from "@/components/providers/scroll-provider";
 import "./globals.css";
 
 const playfair = Playfair_Display({
@@ -21,30 +23,57 @@ const inter = Inter({
   display: "swap",
 });
 
+const siteUrl = SITE.url;
+const siteName = SITE.name;
+
 export const metadata: Metadata = {
   title: {
-    default: SITE.name,
-    template: `%s | ${SITE.name}`,
+    default: siteName,
+    template: `%s | ${siteName}`,
   },
   description: SITE.description,
-  metadataBase: new URL(SITE.url),
+  metadataBase: new URL(siteUrl),
   openGraph: {
-    title: SITE.name,
+    title: siteName,
     description: SITE.description,
-    url: SITE.url,
-    siteName: SITE.name,
+    url: siteUrl,
+    siteName,
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: SITE.name,
+    title: siteName,
     description: SITE.description,
   },
   robots: {
     index: true,
     follow: true,
   },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "HairSalon",
+  name: siteName,
+  image: `${siteUrl}/images/og.jpg`,
+  telephone: SITE.phone,
+  email: SITE.email,
+  url: siteUrl,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: SITE.address.street,
+    addressLocality: SITE.address.city,
+    addressRegion: SITE.address.region,
+    postalCode: SITE.address.postcode,
+    addressCountry: SITE.address.country,
+  },
+  openingHoursSpecification: [
+    { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "09:00", closes: "19:00" },
+    { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday", opens: "10:00", closes: "17:00" },
+    { "@type": "OpeningHoursSpecification", dayOfWeek: "Sunday", opens: "10:00", closes: "15:00" },
+  ],
+  priceRange: "$$$",
 };
 
 export default function RootLayout({
@@ -56,22 +85,37 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${playfair.variable} ${inter.variable} h-full antialiased`}
+      className={`${playfair.variable} ${inter.variable}`}
     >
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         <ThemeProvider
           attribute="class"
           defaultTheme="light"
           enableSystem
-          disableTransitionOnChange
+          disableTransitionOnChange={false}
         >
-          <LenisProvider>
-            <SessionProvider>
+          <SessionProvider>
+            <ScrollProvider>
+              <SkipToContent />
               <Navbar />
-              <main className="flex-1">{children}</main>
+              <main id="main-content" className="flex-1">
+                <PageTransition>{children}</PageTransition>
+              </main>
               <Footer />
-            </SessionProvider>
-          </LenisProvider>
+            </ScrollProvider>
+          </SessionProvider>
           <Toaster
             position="bottom-right"
             toastOptions={{

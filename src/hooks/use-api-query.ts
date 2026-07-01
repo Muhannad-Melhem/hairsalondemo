@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { api as apiClient } from "@/lib/api-client";
 
 type QueryResult<T> = {
@@ -10,13 +10,6 @@ type QueryResult<T> = {
   refetch: () => void;
 };
 
-/**
- * Generic hook for fetching list data from admin API routes.
- * Replaces useSupabaseQuery.
- *
- * @param endpoint - API endpoint path (e.g., "/api/admin/services")
- * @param key - response key that contains the array (e.g., "services")
- */
 export function useApiQuery<T>(
   endpoint: string,
   key: string,
@@ -25,22 +18,17 @@ export function useApiQuery<T>(
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const result = await apiClient.get<Record<string, T[]>>(endpoint);
-      setData(result[key] ?? []);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setLoading(false);
-    }
-  }, [endpoint, key]);
+  const fetchData = () => {
+    apiClient.get<Record<string, T[]>>(endpoint)
+      .then((result) => setData(result[key] ?? []))
+      .catch((err) => setError(err instanceof Error ? err.message : "An error occurred"))
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [endpoint, key]);
 
   return { data, loading, error, refetch: fetchData };
 }
@@ -51,28 +39,21 @@ type SingleResult<T> = {
   error: string | null;
 };
 
-/**
- * Hook for fetching a single item from admin API routes.
- */
 export function useApiGet<T>(endpoint: string, key: string): SingleResult<T> {
   const [data, setData] = useState<T | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const fetchItem = () => {
+    apiClient.get<Record<string, T>>(endpoint)
+      .then((result) => setData(result[key] ?? null))
+      .catch((err) => setError(err instanceof Error ? err.message : "An error occurred"))
+      .finally(() => setLoading(false));
+  };
+
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      setError(null);
-      try {
-        const result = await apiClient.get<Record<string, T>>(endpoint);
-        setData(result[key] ?? null);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    fetchItem();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [endpoint, key]);
 
   return { data, loading, error };

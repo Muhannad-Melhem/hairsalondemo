@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
+import Link from "next/link";
+import { motion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -20,16 +21,17 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SITE } from "@/lib/constants";
+import { fadeUp, slideLeft, slideRight } from "@/lib/animation";
 
 const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  email: z.email("Please enter a valid email address"),
+  email: z.string().email("Please enter a valid email address"),
   phone: z.string().min(7, "Please enter a valid phone number"),
   service: z.string().optional(),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
-type ContactFormData = z.output<typeof contactSchema>;
+type ContactFormData = z.infer<typeof contactSchema>;
 
 const serviceOptions = [
   "Women's Haircut",
@@ -48,6 +50,16 @@ const serviceOptions = [
 ];
 
 function LocalBusinessSchema() {
+  const dayMapping: Record<string, string> = {
+    "Mon": "Monday",
+    "Tue": "Tuesday",
+    "Wed": "Wednesday",
+    "Thu": "Thursday",
+    "Fri": "Friday",
+    "Sat": "Saturday",
+    "Sun": "Sunday",
+  };
+
   const schema = {
     "@context": "https://schema.org",
     "@type": "HairSalon",
@@ -67,14 +79,12 @@ function LocalBusinessSchema() {
     },
     openingHoursSpecification: SITE.hours.map((h) => {
       const [open, close] = h.hours.split(" — ");
+      const days = h.day.split(" — ").map((d) => dayMapping[d.trim()] || d.trim());
       return {
         "@type": "OpeningHoursSpecification",
-        dayOfWeek: h.day
-          .split(" — ")
-          .map((d) => `https://schema.org/${d.substring(0, 2)}`)
-          .join(" "),
-        opens: open,
-        closes: close,
+        dayOfWeek: days,
+        opens: open?.trim(),
+        closes: close?.trim(),
       };
     }),
     sameAs: [
@@ -97,7 +107,6 @@ function LocalBusinessSchema() {
 
 export function ContactContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const prefersReduced = useReducedMotion();
 
   const {
     register,
@@ -110,7 +119,6 @@ export function ContactContent() {
 
   const onSubmit = async (data: ContactFormData) => {
     setIsSubmitting(true);
-    // Simulate API call
     await new Promise((r) => setTimeout(r, 1500));
     toast.success("Message sent successfully! We'll be in touch soon.");
     reset();
@@ -123,8 +131,8 @@ export function ContactContent() {
 
       <section className="relative flex min-h-[50vh] items-center justify-center overflow-hidden">
         <Image
-          src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=80"
-          alt="Contact"
+          src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=85"
+          alt=""
           fill
           priority
           className="object-cover"
@@ -133,14 +141,14 @@ export function ContactContent() {
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70" />
         <motion.div
           className="relative z-10 mx-auto max-w-3xl px-4 text-center sm:px-6"
-          initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.25, 0.1, 0, 1] }}
+          variants={fadeUp}
+          initial="hidden"
+          animate="visible"
         >
           <h1 className="font-heading text-4xl text-white sm:text-5xl md:text-6xl">
             Get in Touch
           </h1>
-          <p className="mt-4 text-lg text-white/80">
+          <p className="mt-4 text-lg text-white/70">
             We&apos;d love to hear from you. Whether you&apos;re ready to book
             or just have a question, we&apos;re here.
           </p>
@@ -149,13 +157,12 @@ export function ContactContent() {
 
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-5">
-          {/* Contact Info */}
           <div className="lg:col-span-2">
             <motion.div
-              initial={prefersReduced ? { opacity: 1 } : { opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              variants={slideLeft}
+              initial="hidden"
+              whileInView="visible"
               viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.25, 0.1, 0, 1] }}
               className="space-y-8"
             >
               <div>
@@ -222,10 +229,7 @@ export function ContactContent() {
                     <p className="text-sm font-medium text-foreground">Hours</p>
                     <div className="space-y-1">
                       {SITE.hours.map((h) => (
-                        <p
-                          key={h.day}
-                          className="text-sm text-muted-foreground"
-                        >
+                        <p key={h.day} className="text-sm text-muted-foreground">
                           <span className="font-medium text-foreground">
                             {h.day}
                           </span>{" "}
@@ -281,7 +285,7 @@ export function ContactContent() {
                 </div>
               </div>
 
-              <div className="overflow-hidden rounded-2xl border border-border/50">
+              <div className="overflow-hidden rounded-2xl border border-border/30">
                 <div className="aspect-[16/9] w-full bg-muted">
                   <iframe
                     src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2887.0!2d-79.4!3d43.64!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDM4JzI0LjAiTiA3OcKwMjQnMDAuMCJX!5e0!3m2!1sen!2sca!4v1"
@@ -299,13 +303,12 @@ export function ContactContent() {
             </motion.div>
           </div>
 
-          {/* Contact Form */}
           <div className="lg:col-span-3">
             <motion.div
-              initial={prefersReduced ? { opacity: 1 } : { opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              variants={slideRight}
+              initial="hidden"
+              whileInView="visible"
               viewport={{ once: true }}
-              transition={{ duration: 0.6, ease: [0.25, 0.1, 0, 1] }}
             >
               <h2 className="font-heading text-2xl text-foreground">
                 Send Us a Message
@@ -322,10 +325,7 @@ export function ContactContent() {
               >
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label
-                      htmlFor="name"
-                      className="mb-1.5 block text-sm font-medium text-foreground"
-                    >
+                    <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-foreground">
                       Name <span className="text-destructive">*</span>
                     </label>
                     <input
@@ -336,16 +336,11 @@ export function ContactContent() {
                       placeholder="Your name"
                     />
                     {errors.name && (
-                      <p className="mt-1 text-xs text-destructive">
-                        {errors.name.message}
-                      </p>
+                      <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>
                     )}
                   </div>
                   <div>
-                    <label
-                      htmlFor="email"
-                      className="mb-1.5 block text-sm font-medium text-foreground"
-                    >
+                    <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">
                       Email <span className="text-destructive">*</span>
                     </label>
                     <input
@@ -356,19 +351,14 @@ export function ContactContent() {
                       placeholder="you@example.com"
                     />
                     {errors.email && (
-                      <p className="mt-1 text-xs text-destructive">
-                        {errors.email.message}
-                      </p>
+                      <p className="mt-1 text-xs text-destructive">{errors.email.message}</p>
                     )}
                   </div>
                 </div>
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label
-                      htmlFor="phone"
-                      className="mb-1.5 block text-sm font-medium text-foreground"
-                    >
+                    <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-foreground">
                       Phone <span className="text-destructive">*</span>
                     </label>
                     <input
@@ -379,16 +369,11 @@ export function ContactContent() {
                       placeholder="(555) 555-0123"
                     />
                     {errors.phone && (
-                      <p className="mt-1 text-xs text-destructive">
-                        {errors.phone.message}
-                      </p>
+                      <p className="mt-1 text-xs text-destructive">{errors.phone.message}</p>
                     )}
                   </div>
                   <div>
-                    <label
-                      htmlFor="service"
-                      className="mb-1.5 block text-sm font-medium text-foreground"
-                    >
+                    <label htmlFor="service" className="mb-1.5 block text-sm font-medium text-foreground">
                       Service Interest
                     </label>
                     <select
@@ -398,19 +383,14 @@ export function ContactContent() {
                     >
                       <option value="">Select a service...</option>
                       {serviceOptions.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
-                        </option>
+                        <option key={opt} value={opt}>{opt}</option>
                       ))}
                     </select>
                   </div>
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="message"
-                    className="mb-1.5 block text-sm font-medium text-foreground"
-                  >
+                  <label htmlFor="message" className="mb-1.5 block text-sm font-medium text-foreground">
                     Message <span className="text-destructive">*</span>
                   </label>
                   <textarea
@@ -421,9 +401,7 @@ export function ContactContent() {
                     placeholder="Tell us about what you're looking for..."
                   />
                   {errors.message && (
-                    <p className="mt-1 text-xs text-destructive">
-                      {errors.message.message}
-                    </p>
+                    <p className="mt-1 text-xs text-destructive">{errors.message.message}</p>
                   )}
                 </div>
 

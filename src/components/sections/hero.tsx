@@ -1,49 +1,56 @@
 "use client";
 
-import { useReducedMotion, useScroll, useTransform, motion } from "framer-motion";
+import {
+  useReducedMotion,
+  useScroll,
+  useTransform,
+  motion,
+  useMotionValue,
+  useSpring,
+} from "framer-motion";
+import { useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, CheckCircle, Star } from "lucide-react";
-
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.15, delayChildren: 0.2 },
-  },
-};
-
-const easeOut = [0.25, 0.1, 0, 1] as const;
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 30 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.8, ease: easeOut },
-  },
-};
+import { ArrowRight } from "lucide-react";
+import { blurReveal, staggerContainerSlow, easePremium } from "@/lib/animation";
 
 export function Hero() {
   const prefersReduced = useReducedMotion();
-  const { scrollYProgress } = useScroll();
-  const scale = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start start", "end start"],
+  });
 
-  const animProps = prefersReduced
-    ? { initial: { opacity: 1 }, animate: { opacity: 1 } }
-    : {};
+  const bgScale = useTransform(scrollYProgress, [0, 1], [1, 1.1]);
+  const bgOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0.4]);
+  const contentY = useTransform(scrollYProgress, [0, 1], [0, 120]);
+
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+  const glowX = useSpring(mouseX, { stiffness: 50, damping: 20 });
+  const glowY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+
+  function handleMouseMove(e: React.MouseEvent) {
+    const rect = sectionRef.current?.getBoundingClientRect();
+    if (!rect) return;
+    mouseX.set((e.clientX - rect.left) / rect.width);
+    mouseY.set((e.clientY - rect.top) / rect.height);
+  }
 
   return (
     <section
+      ref={sectionRef}
+      onMouseMove={handleMouseMove}
       aria-label="Hero"
       className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden"
     >
       <motion.div
-        className="absolute inset-0 -z-10 will-change-transform"
-        style={prefersReduced ? {} : { scale }}
+        className="absolute inset-0 -z-10"
+        style={prefersReduced ? {} : { scale: bgScale, opacity: bgOpacity }}
       >
         <Image
-          src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=80"
+          src="https://images.unsplash.com/photo-1560066984-138dadb4c035?w=1920&q=85"
           alt=""
           fill
           priority
@@ -51,88 +58,78 @@ export function Hero() {
           sizes="100vw"
         />
       </motion.div>
-      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
-      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/30 via-transparent to-black/30" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-b from-black/80 via-black/50 to-black/70" />
+      <div className="absolute inset-0 -z-10 bg-gradient-to-r from-black/40 via-transparent to-black/40" />
 
       <motion.div
-        className="mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8"
-        variants={containerVariants}
+        className="pointer-events-none absolute -z-10 size-[500px] rounded-full bg-primary/10 blur-3xl"
+        style={{
+          left: useTransform(glowX, (v) => `${v * 100}%`),
+          top: useTransform(glowY, (v) => `${v * 100}%`),
+          translateX: "-50%",
+          translateY: "-50%",
+        }}
+      />
+
+      <motion.div
+        className="mx-auto max-w-5xl px-4 text-center sm:px-6 lg:px-8"
+        style={prefersReduced ? {} : { y: contentY }}
+        variants={prefersReduced ? {} : staggerContainerSlow}
         initial="hidden"
         animate="visible"
-        {...animProps}
       >
         <motion.div
-          variants={itemVariants}
-          className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm text-white backdrop-blur-sm"
+          variants={blurReveal}
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-5 py-1.5 text-xs font-medium tracking-[0.15em] text-white/70 uppercase backdrop-blur-sm"
         >
-          <span className="relative flex size-2" aria-hidden="true">
-            <motion.span
-              className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"
-              animate={prefersReduced ? {} : { scale: [1, 1.5, 1], opacity: [0.75, 0, 0.75] }}
-              transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <span className="relative inline-flex size-2 rounded-full bg-green-400" />
-          </span>
-          Now Accepting New Clients
+          <span className="size-1.5 rounded-full bg-primary" />
+          Toronto&apos;s Premier Salon
         </motion.div>
 
         <motion.h1
-          variants={itemVariants}
-          className="font-heading text-5xl leading-tight text-white sm:text-6xl md:text-7xl lg:text-8xl"
+          variants={blurReveal}
+          className="font-heading text-5xl leading-[1.05] text-white sm:text-6xl md:text-7xl lg:text-8xl"
         >
           Where Style
           <br />
-          Meets Precision
+          <span className="text-primary">Meets Precision</span>
         </motion.h1>
 
         <motion.p
-          variants={itemVariants}
-          className="mx-auto mt-6 max-w-2xl text-lg text-white/80 sm:text-xl"
+          variants={blurReveal}
+          className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg"
         >
           Experience the art of exceptional hair care in an atmosphere of
-          refined luxury. Your journey to extraordinary style begins here.
+          refined luxury. Your journey begins here.
         </motion.p>
 
         <motion.div
-          variants={itemVariants}
+          variants={blurReveal}
           className="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row"
         >
           <Link
             href="/booking"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-primary px-8 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/30 transition-all hover:bg-primary/90"
+            className="group inline-flex h-13 items-center gap-2 rounded-full bg-primary px-8 text-sm font-semibold text-primary-foreground shadow-xl shadow-primary/25 transition-all hover:bg-primary/90 hover:shadow-2xl hover:shadow-primary/35"
           >
             Book Your Appointment
-            <ArrowRight className="size-4" />
+            <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
           </Link>
           <Link
             href="/services"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-white/30 bg-transparent px-8 text-base font-semibold text-white transition-all hover:bg-white/10"
+            className="inline-flex h-13 items-center gap-2 rounded-full border border-white/20 bg-white/5 px-8 text-sm font-semibold text-white backdrop-blur-sm transition-all hover:bg-white/10"
           >
             Explore Services
           </Link>
         </motion.div>
 
         <motion.div
-          variants={itemVariants}
-          className="mt-16 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-8"
+          variants={blurReveal}
+          className="mt-16 flex items-center justify-center gap-2 text-xs text-white/40"
         >
-          <div className="flex items-center gap-2 text-white/90">
-            <div className="flex">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className="size-4 fill-yellow-400 text-yellow-400"
-                />
-              ))}
-            </div>
-            <span className="text-sm font-medium">4.9</span>
-            <span className="text-sm text-white/60">(287 reviews)</span>
-          </div>
-          <div className="hidden h-4 w-px bg-white/20 sm:block" />
-          <div className="flex items-center gap-2 text-sm text-white/80">
-            <CheckCircle className="size-4 text-primary" />
-            Toronto&apos;s Top-Rated Salon 2024
-          </div>
+          <span className="size-4 rounded-full border border-white/20 flex items-center justify-center">
+            <span className="size-1.5 rounded-full bg-white/40" />
+          </span>
+          Scroll to explore
         </motion.div>
       </motion.div>
     </section>
