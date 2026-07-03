@@ -1,10 +1,10 @@
+import { Metadata } from "next";
 import { createMetadata } from "@/lib/metadata";
-import { ServicesContent } from "./services-content";
+import ServicesContent from "./services-content";
 
-export const metadata = createMetadata({
-  title: "Our Services",
-  description:
-    "Explore our comprehensive range of premium hair services — precision cuts, expert colour, revitalising treatments, and elegant styling.",
+export const metadata: Metadata = createMetadata({
+  title: "Services",
+  description: "Explore our premium hair services in Amman.",
   path: "/services",
 });
 

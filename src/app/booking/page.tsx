@@ -1,19 +1,15 @@
-import type { Metadata } from "next";
+import { createMetadata } from "@/lib/metadata";
 import { SITE } from "@/lib/constants";
 import { getServices, getStylists } from "@/lib/supabase/actions";
 import { BookingForm } from "@/components/booking/booking-form";
 import type { Service, Stylist } from "@/types";
 
-export const metadata: Metadata = {
-  title: "Book an Appointment",
+export const metadata = createMetadata({
+  title: "Booking",
   description:
-    "Schedule your appointment at Luxe Hair Studio. Choose from our premium services, select your preferred stylist, and pick the perfect time.",
-  openGraph: {
-    title: "Book an Appointment | Luxe Hair Studio",
-    description:
-      "Schedule your appointment at Luxe Hair Studio. Choose from our premium services, select your preferred stylist, and pick the perfect time.",
-  },
-};
+    "Schedule your appointment at Luxe Hair Studio in Abdoun, Amman. Choose from our premium services, select your preferred stylist, and pick the perfect time.",
+  path: "/booking",
+});
 
 export default async function BookingPage() {
   const [servicesData, stylistsData] = await Promise.all([
@@ -51,7 +47,7 @@ export default async function BookingPage() {
     "@context": "https://schema.org",
     "@type": "BookingAction",
     name: "Book an Appointment",
-    description: "Book your appointment at Luxe Hair Studio",
+    description: "Book your appointment at Luxe Hair Studio in Amman",
     provider: {
       "@type": "HairSalon",
       name: SITE.name,
@@ -84,8 +80,8 @@ export default async function BookingPage() {
             Book Your Appointment
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted-foreground">
-            Experience the art of exceptional hair care. Select your service,
-            choose your time, and let us take care of the rest.
+            Experience the art of exceptional hair care in Amman. Select your
+            service, choose your stylist, and let us take care of the rest.
           </p>
         </div>
       </section>

@@ -9,16 +9,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/stylists",
     "/about",
     "/pricing",
-    "/testimonials",
-    "/faq",
     "/contact",
+    "/faq",
+    "/testimonials",
     "/booking",
   ];
 
   return routes.map((route) => ({
     url: `${SITE.url}${route}`,
     lastModified: new Date(),
-    changeFrequency: route === "" ? "weekly" : "monthly",
+    changeFrequency: "weekly" as const,
     priority: route === "" ? 1 : 0.8,
   }));
 }

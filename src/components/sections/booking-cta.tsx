@@ -3,7 +3,8 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, ShieldCheck, Clock, Sparkles } from "lucide-react";
-import { fadeUp, buttonMagnetic, easePremium } from "@/lib/animation";
+import { fadeUp, buttonMagnetic } from "@/lib/animation";
+import { SITE } from "@/lib/constants";
 
 const trustItems = [
   { icon: Sparkles, text: "Free consultation" },
@@ -15,7 +16,7 @@ export function BookingCTA() {
   return (
     <section
       aria-label="Book an appointment"
-      className="relative overflow-hidden bg-foreground py-24 sm:py-32"
+      className="relative overflow-hidden bg-foreground py-32 sm:py-40"
     >
       <motion.div
         className="absolute inset-0 opacity-20"

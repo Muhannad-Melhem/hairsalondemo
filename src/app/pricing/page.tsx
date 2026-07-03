@@ -1,22 +1,54 @@
-import { createMetadata } from "@/lib/metadata";
-import Image from "next/image";
 import Link from "next/link";
+import Image from "next/image";
 import { Check, ArrowRight, HelpCircle } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { services } from "@/lib/data";
-import { cn, formatPrice, formatDuration } from "@/lib/utils";
+import { SITE } from "@/lib/constants";
+import { formatPrice } from "@/lib/utils";
+import { createMetadata } from "@/lib/metadata";
 
 export const metadata = createMetadata({
   title: "Pricing",
   description:
-    "Transparent pricing for our full range of luxury hair services. Invest in hair that looks and feels extraordinary.",
+    "Transparent pricing for our premium hair services in Amman.",
   path: "/pricing",
 });
 
-const tierLabels = [
-  { key: "Cuts", title: "Cut & Style", subtitle: "Precision shapes tailored to you" },
-  { key: "Color", title: "Colour", subtitle: "Vibrant, dimensional, long-lasting" },
-  { key: "Styling", title: "Styling", subtitle: "Occasion-perfect finishes" },
+const tiers = [
+  {
+    name: "Signature Cut",
+    price: 25,
+    popular: false,
+    features: [
+      "Complimentary consultation",
+      "Precision haircut",
+      "Blow-dry & style",
+      "Style tips & product samples",
+    ],
+  },
+  {
+    name: "Color & Balayage",
+    price: 45,
+    popular: true,
+    features: [
+      "Full consultation & color analysis",
+      "Custom balayage or all-over color",
+      "Olaplex bond treatment",
+      "Blow-dry & finish",
+      "Follow-up toner visit",
+    ],
+  },
+  {
+    name: "Luxury Package",
+    price: 85,
+    popular: false,
+    features: [
+      "Signature cut + custom color",
+      "Olaplex bond treatment",
+      "Luxury hair mask treatment",
+      "Blow-dry & styling",
+      "Premium product take-home kit",
+      "Complimentary Arabic coffee",
+    ],
+  },
 ];
 
 export default function PricingPage() {
@@ -33,132 +65,88 @@ export default function PricingPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70" />
         <div className="relative z-10 mx-auto max-w-3xl px-4 text-center sm:px-6">
-          <h1 className="font-heading text-4xl text-white sm:text-5xl md:text-6xl">
-            Investment in Excellence
+          <h1 className="font-heading text-5xl text-white sm:text-6xl md:text-7xl">
+            Investment in You
           </h1>
           <p className="mt-4 text-lg text-white/80">
-            We believe in transparent pricing that reflects the skill, time, and
-            premium products behind every service.
+            Transparent pricing that reflects the artistry, premium products, and
+            meticulous attention behind every service.
           </p>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
-        <div className="space-y-16">
-          {tierLabels.map((tier) => {
-            const tierServices = services.filter(
-              (s) =>
-                s.category === tier.key &&
-                (tier.key !== "Styling" || s.category === "Styling"),
-            );
-            const allTierServices = services.filter(
-              (s) => s.category === tier.key,
-            );
-            return (
-              <div key={tier.key}>
-                <div className="mb-8">
-                  <h2 className="font-heading text-3xl text-foreground">
-                    {tier.title}
-                  </h2>
-                  <p className="mt-1 text-muted-foreground">{tier.subtitle}</p>
-                </div>
-                <div className="overflow-hidden rounded-2xl border border-border/50">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-border/50 bg-muted/50">
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-foreground">
-                          Service
-                        </th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-foreground max-sm:hidden">
-                          Description
-                        </th>
-                        <th className="px-6 py-4 text-right text-sm font-semibold text-foreground">
-                          Duration
-                        </th>
-                        <th className="px-6 py-4 text-right text-sm font-semibold text-foreground">
-                          Price
-                        </th>
-                        <th className="px-6 py-4 text-right max-sm:hidden" />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {allTierServices.map((service) => (
-                        <tr
-                          key={service.id}
-                          className="border-b border-border/20 last:border-0 transition-colors hover:bg-muted/20"
-                        >
-                          <td className="px-6 py-4">
-                            <span className="font-medium text-foreground">
-                              {service.name}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 max-sm:hidden">
-                            <span className="text-sm text-muted-foreground line-clamp-1">
-                              {service.description}
-                            </span>
-                          </td>
-                          <td className="px-6 py-4 text-right text-sm text-muted-foreground whitespace-nowrap">
-                            {formatDuration(service.duration)}
-                          </td>
-                          <td className="px-6 py-4 text-right font-semibold text-foreground whitespace-nowrap">
-                            {formatPrice(service.price)}
-                          </td>
-                          <td className="px-6 py-4 text-right max-sm:hidden">
-                            <Link
-                              href="/booking"
-                              className={cn(
-                                buttonVariants({ variant: "default", size: "sm" }),
-                                "rounded-full text-xs",
-                              )}
-                            >
-                              Book
-                              <ArrowRight className="ml-1 size-3" />
-                            </Link>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                  <div className="border-t border-border/50 bg-muted/30 px-6 py-4 sm:hidden">
-                    <Link
-                      href="/booking"
-                      className={cn(
-                        buttonVariants({ variant: "default", size: "default" }),
-                        "w-full rounded-full",
-                      )}
-                    >
-                      Book Now
-                      <ArrowRight className="ml-1.5 size-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="mt-16 rounded-2xl border border-border/50 bg-muted/30 p-8 sm:p-10">
-          <div className="flex items-start gap-3">
-            <HelpCircle className="mt-0.5 size-5 shrink-0 text-primary" />
-            <div>
-              <h3 className="font-heading text-lg text-foreground">
-                Have questions about pricing?
-              </h3>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Prices may vary based on stylist seniority, hair length, and
-                density. We provide a precise quote during your consultation
-                before any service begins. No surprises — ever.
-              </p>
-              <Link
-                href="/faq"
-                className={cn(
-                  buttonVariants({ variant: "outline", size: "default" }),
-                  "mt-4 rounded-full inline-flex items-center gap-1.5",
-                )}
+      <section className="py-20 sm:py-28">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid gap-8 lg:grid-cols-3">
+            {tiers.map((tier) => (
+              <div
+                key={tier.name}
+                className={`relative rounded-2xl border p-8 ${
+                  tier.popular
+                    ? "border-primary bg-card shadow-xl shadow-primary/10 ring-1 ring-primary/20"
+                    : "border-border/30 bg-card"
+                }`}
               >
-                View FAQ
-                <ArrowRight className="ml-1 size-3" />
-              </Link>
+                {tier.popular && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-primary px-4 py-1 text-xs font-semibold text-primary-foreground">
+                    Most Popular
+                  </div>
+                )}
+                <h3 className="font-heading text-xl text-foreground">
+                  {tier.name}
+                </h3>
+                <div className="mt-4 flex items-baseline gap-0.5">
+                  <span className="font-heading text-4xl text-foreground">
+                    {formatPrice(tier.price)}
+                  </span>
+                </div>
+                <ul className="mt-6 space-y-3">
+                  {tier.features.map((feature) => (
+                    <li
+                      key={feature}
+                      className="flex items-start gap-3 text-sm text-muted-foreground"
+                    >
+                      <Check className="mt-0.5 size-4 shrink-0 text-primary" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href="/booking"
+                  className={`mt-8 inline-flex w-full items-center justify-center rounded-full px-4 py-3 text-sm font-semibold transition-all ${
+                    tier.popular
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30 hover:bg-primary/90"
+                      : "border border-border bg-background text-foreground hover:bg-muted"
+                  }`}
+                >
+                  Book Now
+                  <ArrowRight className="ml-1.5 size-3.5" />
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-16 rounded-2xl border border-border/50 bg-muted/30 p-8 sm:p-10">
+            <div className="flex items-start gap-3">
+              <HelpCircle className="mt-0.5 size-5 shrink-0 text-primary" />
+              <div>
+                <h3 className="font-heading text-lg text-foreground">
+                  A note about our pricing
+                </h3>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Prices listed are starting points. Final pricing is determined
+                  during your complimentary consultation based on hair length,
+                  density, and the specific services you choose. We provide a
+                  precise quote before any service begins — no surprises, ever.
+                </p>
+                <Link
+                  href="/contact"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-primary/80"
+                >
+                  Questions? Get in touch
+                  <ArrowRight className="size-3.5" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>

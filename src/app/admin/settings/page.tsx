@@ -62,7 +62,7 @@ const socialSchema = z.object({
   instagram: z.string().url().or(z.literal("")),
   facebook: z.string().url().or(z.literal("")),
   tiktok: z.string().url().or(z.literal("")),
-  pinterest: z.string().url().or(z.literal("")),
+  snapchat: z.string().url().or(z.literal("")),
 });
 
 export default function SettingsPage() {
@@ -101,7 +101,7 @@ export default function SettingsPage() {
       instagram: SITE.social.instagram,
       facebook: SITE.social.facebook,
       tiktok: SITE.social.tiktok,
-      pinterest: SITE.social.pinterest,
+      snapchat: (SITE.social as Record<string, string>).snapchat || "",
     },
   });
 
@@ -255,7 +255,7 @@ export default function SettingsPage() {
               </div>
               <div className="space-y-2">
                 <Label>Pinterest</Label>
-                <Input {...socialForm.register("pinterest")} placeholder="https://pinterest.com/..." />
+                <Input {...socialForm.register("snapchat")} placeholder="https://snapchat.com/add/..." />
               </div>
             </div>
             <SectionActions section="social" isSubmitting={saving === "social"} />

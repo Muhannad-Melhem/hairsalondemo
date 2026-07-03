@@ -9,26 +9,26 @@ const testimonials = [
   {
     content:
       "Absolutely transformative experience. From the moment I walked in, I felt like royalty. My stylist listened to exactly what I wanted and delivered beyond my expectations.",
-    name: "Sarah Mitchell",
+    name: "Layla Mansour",
     role: "Regular Client",
     rating: 5,
-    avatar: "SM",
+    avatar: "LM",
   },
   {
     content:
       "The best balayage I have ever had. The color is dimensional, natural, and exactly what I envisioned. I have never received so many compliments on my hair.",
-    name: "Jessica Chen",
+    name: "Dana Khalil",
     role: "Color Client",
     rating: 5,
-    avatar: "JC",
+    avatar: "DK",
   },
   {
     content:
-      "I drive from Oakville just to come here. The attention to detail, the atmosphere, the professionalism — it is unmatched. Worth every penny.",
-    name: "Amanda Foster",
-    role: "Loyal Client since 2019",
+      "I drive from Zarqa just to come here. The attention to detail, the atmosphere, the professionalism — it is unmatched. Worth every penny.",
+    name: "Rania Saadi",
+    role: "Loyal Client since 2020",
     rating: 5,
-    avatar: "AF",
+    avatar: "RS",
   },
 ];
 
@@ -95,7 +95,7 @@ export function TestimonialsCarousel() {
   const testimonial = testimonials[index];
 
   return (
-    <section aria-label="Testimonials" className="py-24 sm:py-32">
+    <section aria-label="Testimonials" className="py-32 sm:py-40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           variants={fadeUp}

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Camera, ExternalLink } from "lucide-react";
 import { fadeUp, staggerContainer, slideLeft, slideRight } from "@/lib/animation";
+import { SITE } from "@/lib/constants";
 
 const images = [
   {
@@ -35,7 +36,7 @@ const images = [
 
 export function InstagramGallery() {
   return (
-    <section aria-label="Instagram gallery" className="bg-muted/30 py-24 sm:py-32">
+    <section aria-label="Instagram gallery" className="bg-muted/30 py-32 sm:py-40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           variants={fadeUp}
@@ -45,12 +46,12 @@ export function InstagramGallery() {
           className="text-center"
         >
           <Link
-            href="https://instagram.com/luxehairstudio"
+            href={SITE.social.instagram}
             target="_blank"
             rel="noopener noreferrer"
             className="group inline-flex items-center gap-2 font-heading text-2xl text-foreground transition-colors hover:text-primary sm:text-3xl"
           >
-            Follow Us @luxehairstudio
+            Follow Us @luxehairstudio.jo
             <ExternalLink className="size-4 opacity-50 transition-opacity group-hover:opacity-100" />
           </Link>
           <p className="mt-2 text-sm text-muted-foreground">

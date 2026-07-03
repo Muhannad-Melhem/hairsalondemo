@@ -5,7 +5,7 @@ import { motion, useScroll, useTransform, useReducedMotion } from "framer-motion
 import { useRef } from "react";
 import { SITE } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
-import { MapPin, Phone, Mail, Clock } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, MessageCircle } from "lucide-react";
 import {
   fadeUp,
   slideLeft,
@@ -24,7 +24,7 @@ export function ContactSection() {
   const mapY = useTransform(scrollYProgress, [0, 1], [20, -20]);
 
   return (
-    <section aria-label="Contact us" className="py-24 sm:py-32">
+    <section aria-label="Contact us" className="py-32 sm:py-40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           variants={fadeUp}
@@ -125,7 +125,7 @@ export function ContactSection() {
               style={prefersReduced ? {} : { y: mapY }}
             >
               <iframe
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2887.3!2d-79.3!3d43.6!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDPCsDM2JzAwLjAiTiA3OcKwMTgnMDAuMCJX!5e0!3m2!1sen!2sca!4v1"
+                src={SITE.address.googleMapsUrl}
                 width="100%"
                 height="200"
                 style={{ border: 0 }}
@@ -175,6 +175,17 @@ export function ContactSection() {
                     {SITE.address.street}, {SITE.address.city}
                   </p>
                 </div>
+              </div>
+              <div className="border-t border-border/30 pt-4">
+                <a
+                  href={SITE.social.whatsapp}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-6 py-3 text-sm font-semibold text-white transition-all hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/25"
+                >
+                  <MessageCircle className="size-4" />
+                  Chat on WhatsApp
+                </a>
               </div>
             </div>
           </motion.div>

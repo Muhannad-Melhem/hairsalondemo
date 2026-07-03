@@ -1,19 +1,18 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
+import { Cormorant_Garamond, Inter } from "next/font/google";
 import { Toaster } from "sonner";
 import { SITE } from "@/lib/constants";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import { SessionProvider } from "@/components/providers/session-provider";
-import { SkipToContent } from "@/components/ui/skip-to-content";
+import { LenisProvider } from "@/components/providers/lenis-provider";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { PageTransition } from "@/components/layout/page-transition";
-import { ScrollProvider } from "@/components/providers/scroll-provider";
+import { SessionProvider } from "@/components/providers/session-provider";
 import "./globals.css";
 
-const playfair = Playfair_Display({
+const cormorant = Cormorant_Garamond({
   variable: "--font-heading",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -23,57 +22,53 @@ const inter = Inter({
   display: "swap",
 });
 
-const siteUrl = SITE.url;
-const siteName = SITE.name;
-
 export const metadata: Metadata = {
   title: {
-    default: siteName,
-    template: `%s | ${siteName}`,
+    default: SITE.name,
+    template: `%s | ${SITE.name}`,
   },
   description: SITE.description,
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(SITE.url),
+  keywords: [
+    "hair salon amman",
+    "luxury hair salon jordan",
+    "premium hair styling amman",
+    "balayage amman",
+    "bridal hair jordan",
+    "keratin treatment amman",
+    "hair color amman",
+    "best hair salon amman",
+    "salon abdoun",
+  ],
   openGraph: {
-    title: siteName,
+    title: SITE.name,
     description: SITE.description,
-    url: siteUrl,
-    siteName,
+    url: SITE.url,
+    siteName: SITE.name,
     locale: "en_US",
     type: "website",
+    images: [
+      {
+        url: `${SITE.url}/og-image.jpg`,
+        width: 1200,
+        height: 630,
+        alt: SITE.name,
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: siteName,
+    title: SITE.name,
     description: SITE.description,
+    images: [`${SITE.url}/og-image.jpg`],
   },
   robots: {
     index: true,
     follow: true,
   },
-};
-
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "HairSalon",
-  name: siteName,
-  image: `${siteUrl}/images/og.jpg`,
-  telephone: SITE.phone,
-  email: SITE.email,
-  url: siteUrl,
-  address: {
-    "@type": "PostalAddress",
-    streetAddress: SITE.address.street,
-    addressLocality: SITE.address.city,
-    addressRegion: SITE.address.region,
-    postalCode: SITE.address.postcode,
-    addressCountry: SITE.address.country,
+  alternates: {
+    canonical: SITE.url,
   },
-  openingHoursSpecification: [
-    { "@type": "OpeningHoursSpecification", dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"], opens: "09:00", closes: "19:00" },
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Saturday", opens: "10:00", closes: "17:00" },
-    { "@type": "OpeningHoursSpecification", dayOfWeek: "Sunday", opens: "10:00", closes: "15:00" },
-  ],
-  priceRange: "$$$",
 };
 
 export default function RootLayout({
@@ -81,19 +76,48 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "HairSalon",
+    name: SITE.name,
+    description: SITE.description,
+    url: SITE.url,
+    telephone: SITE.phoneInternational,
+    email: SITE.email,
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: SITE.address.street,
+      addressLocality: SITE.address.city,
+      addressRegion: SITE.address.region,
+      postalCode: SITE.address.postcode,
+      addressCountry: SITE.address.country,
+    },
+    geo: {
+      "@type": "GeoCoordinates",
+      latitude: 31.95,
+      longitude: 35.87,
+    },
+    openingHoursSpecification: SITE.hours.map((h) => ({
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: h.day,
+      opens: h.hours.split(" — ")[0],
+      closes: h.hours.split(" — ")[1],
+    })),
+    priceRange: "$$",
+    sameAs: [
+      SITE.social.instagram,
+      SITE.social.facebook,
+      SITE.social.tiktok,
+    ],
+  };
+
   return (
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${playfair.variable} ${inter.variable}`}
+      className={`${cormorant.variable} ${inter.variable} h-full antialiased`}
     >
       <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -102,20 +126,17 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem
-          disableTransitionOnChange={false}
+          disableTransitionOnChange
         >
-          <SessionProvider>
-            <ScrollProvider>
-              <SkipToContent />
+          <LenisProvider>
+            <SessionProvider>
               <Navbar />
-              <main id="main-content" className="flex-1">
-                <PageTransition>{children}</PageTransition>
-              </main>
+              <main className="flex-1">{children}</main>
               <Footer />
-            </ScrollProvider>
-          </SessionProvider>
+            </SessionProvider>
+          </LenisProvider>
           <Toaster
             position="bottom-right"
             toastOptions={{

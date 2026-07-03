@@ -1,10 +1,10 @@
 import { createMetadata } from "@/lib/metadata";
-import { ContactContent } from "./contact-content";
+import ContactContent from "./contact-content";
 
 export const metadata = createMetadata({
-  title: "Contact Us",
+  title: "Contact",
   description:
-    "Get in touch with Luxe Hair Studio. Book an appointment, ask a question, or visit our Toronto salon.",
+    "Get in touch with Luxe Hair Studio in Abdoun, Amman.",
   path: "/contact",
 });
 

@@ -1,10 +1,10 @@
 import { createMetadata } from "@/lib/metadata";
-import { FAQContent } from "./faq-content";
+import FAQContent from "./faq-content";
 
 export const metadata = createMetadata({
-  title: "Frequently Asked Questions",
+  title: "FAQ",
   description:
-    "Find answers to common questions about our services, booking, pricing, and salon policies at Luxe Hair Studio.",
+    "Frequently asked questions about our hair salon in Amman.",
   path: "/faq",
 });
 

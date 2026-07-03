@@ -1,75 +1,98 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
-import { Camera, Award, Sparkles, ArrowRight, Star } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { stylists } from "@/lib/data";
-import { cn } from "@/lib/utils";
-import type { Stylist } from "@/types";
+import { motion } from "framer-motion";
+import { Star, Award, ArrowRight } from "lucide-react";
+import { staggerContainer, fadeUp } from "@/lib/animation";
 
-function StylistCard({ stylist, index }: { stylist: Stylist; index: number }) {
-  const prefersReduced = useReducedMotion();
+const stylists = [
+  {
+    id: "isabella-rossi",
+    name: "Isabella Rossi",
+    title: "Master Colorist & Founder",
+    specialties: ["Balayage", "Color Correction", "Transformations"],
+    rating: 4.9,
+    image: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=800&q=80",
+  },
+  {
+    id: "marcus-chen",
+    name: "Marcus Chen",
+    title: "Senior Stylist",
+    specialties: ["Precision Cuts", "Men's Grooming", "Texture"],
+    rating: 4.8,
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
+  },
+  {
+    id: "sophie-laurent",
+    name: "Sophie Laurent",
+    title: "Texture Specialist",
+    specialties: ["Curly Hair", "Treatments", "Braiding"],
+    rating: 4.9,
+    image: "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=800&q=80",
+  },
+  {
+    id: "nadia-hariri",
+    name: "Nadia Hariri",
+    title: "Bridal Expert",
+    specialties: ["Bridal Styling", "Updos", "Editorial"],
+    rating: 4.9,
+    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=800&q=80",
+  },
+  {
+    id: "tariq-mansour",
+    name: "Tariq Mansour",
+    title: "Barber & Grooming",
+    specialties: ["Fades", "Beard Sculpting", "Classic Cuts"],
+    rating: 4.7,
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=800&q=80",
+  },
+  {
+    id: "yasmine-khoury",
+    name: "Yasmine Khoury",
+    title: "Color Artist",
+    specialties: ["Fashion Color", "Highlights", "Color Theory"],
+    rating: 4.8,
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=800&q=80",
+  },
+];
 
+function StylistCard({ stylist }: { stylist: (typeof stylists)[0] }) {
   return (
     <motion.div
-      initial={prefersReduced ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, delay: index * 0.1, ease: [0.25, 0.1, 0, 1] }}
-      className="group relative overflow-hidden rounded-2xl border border-border/50 bg-card transition-all duration-500 hover:shadow-xl hover:shadow-primary/5"
+      variants={fadeUp}
+      className="group relative overflow-hidden rounded-2xl border border-border/30 bg-card transition-all duration-500 hover:shadow-xl hover:shadow-primary/5"
     >
-      <div className="relative h-80 overflow-hidden sm:h-96">
+      <div className="relative aspect-[3/4] overflow-hidden">
         <Image
           src={stylist.image}
           alt={stylist.name}
           fill
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          className="object-cover object-center transition-all duration-700 group-hover:scale-105"
+          className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
         <div className="absolute bottom-0 left-0 right-0 translate-y-4 p-6 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-          <div className="flex flex-wrap gap-1.5">
-            {stylist.specialties.map((s) => (
-              <span
-                key={s}
-                className="inline-block rounded-full bg-white/15 px-2.5 py-1 text-xs font-medium text-white backdrop-blur-sm"
-              >
-                {s}
-              </span>
-            ))}
-          </div>
-        </div>
-        {stylist.instagram && (
           <a
-            href={stylist.instagram}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="absolute right-4 top-4 flex size-9 items-center justify-center rounded-full bg-white/10 text-white opacity-0 backdrop-blur-sm transition-all duration-300 hover:bg-white/20 group-hover:opacity-100"
-            aria-label={`${stylist.name}'s Instagram`}
+            href="/booking"
+            className="inline-flex items-center gap-2 rounded-full bg-white/90 px-5 py-2 text-sm font-semibold text-foreground backdrop-blur-sm transition-colors hover:bg-white"
           >
-            <Camera className="size-4" />
+            View Profile
+            <ArrowRight className="size-3.5" />
           </a>
-        )}
+        </div>
+        <div className="absolute right-4 top-4">
+          <span className="inline-flex items-center gap-1 rounded-full bg-black/40 px-3 py-1 text-xs font-medium text-white backdrop-blur-sm">
+            <Star className="size-3 text-primary" />
+            {stylist.rating}
+          </span>
+        </div>
       </div>
       <div className="p-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <h3 className="font-heading text-xl text-foreground">{stylist.name}</h3>
-            <p className="text-sm text-primary font-medium">{stylist.title}</p>
-          </div>
-          <div className="flex items-center gap-1 rounded-full bg-muted px-3 py-1 text-xs font-medium text-muted-foreground">
-            <Star className="size-3 text-primary" />
-            {stylist.experience} yrs
-          </div>
-        </div>
-        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
-          {stylist.bio}
-        </p>
-        <div className="mt-4 flex flex-wrap gap-1.5 max-sm:hidden">
-          {stylist.specialties.slice(0, 3).map((s) => (
+        <h3 className="font-heading text-xl text-foreground">{stylist.name}</h3>
+        <p className="mt-1 text-sm font-medium text-primary">{stylist.title}</p>
+        <div className="mt-4 flex flex-wrap gap-1.5">
+          {stylist.specialties.map((s) => (
             <span
               key={s}
               className="inline-block rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground"
@@ -77,33 +100,16 @@ function StylistCard({ stylist, index }: { stylist: Stylist; index: number }) {
               {s}
             </span>
           ))}
-          {stylist.specialties.length > 3 && (
-            <span className="inline-block rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
-              +{stylist.specialties.length - 3}
-            </span>
-          )}
         </div>
-        <Link
-          href="/booking"
-          className={cn(
-            buttonVariants({ variant: "default", size: "default" }),
-            "mt-5 h-10 w-full rounded-full text-sm font-semibold",
-          )}
-        >
-          Book with {stylist.name.split(" ")[0]}
-          <ArrowRight className="ml-1.5 size-3.5" />
-        </Link>
       </div>
     </motion.div>
   );
 }
 
-export function StylistsContent() {
-  const prefersReduced = useReducedMotion();
-
+export default function StylistsContent() {
   return (
     <>
-      <section className="relative flex min-h-[50vh] items-center justify-center overflow-hidden">
+      <section className="relative flex min-h-[60vh] items-center justify-center overflow-hidden">
         <Image
           src="https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=1920&q=80"
           alt="Our stylists"
@@ -112,18 +118,18 @@ export function StylistsContent() {
           className="object-cover"
           sizes="100vw"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/70" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-black/70" />
         <motion.div
           className="relative z-10 mx-auto max-w-3xl px-4 text-center sm:px-6"
-          initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, ease: [0.25, 0.1, 0, 1] }}
+          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
         >
           <Award className="mx-auto mb-4 size-8 text-primary" />
-          <h1 className="font-heading text-4xl text-white sm:text-5xl md:text-6xl">
-            Meet Our Team
+          <h1 className="font-heading text-5xl text-white sm:text-6xl md:text-7xl">
+            Our Stylists
           </h1>
-          <p className="mt-4 text-lg text-white/80">
+          <p className="mt-6 text-lg text-white/70">
             Behind every great haircut is a great stylist. Our team brings
             together diverse expertise united by a shared passion for
             exceptional hair.
@@ -133,13 +139,14 @@ export function StylistsContent() {
 
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <motion.div
-          initial={prefersReduced ? { opacity: 1 } : { opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
           className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {stylists.map((stylist, i) => (
-            <StylistCard key={stylist.id} stylist={stylist} index={i} />
+          {stylists.map((stylist) => (
+            <StylistCard key={stylist.id} stylist={stylist} />
           ))}
         </motion.div>
       </section>

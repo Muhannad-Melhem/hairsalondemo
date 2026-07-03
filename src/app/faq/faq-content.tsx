@@ -1,21 +1,69 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import * as Accordion from "@radix-ui/react-accordion";
-import { Search, ChevronDown, HelpCircle, ArrowRight, MessageCircle } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { faqs } from "@/lib/data";
-import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, MessageCircle, ArrowRight } from "lucide-react";
+import { SITE } from "@/lib/constants";
 import { fadeUp, staggerContainerSlow } from "@/lib/animation";
+
+const faqItems = [
+  {
+    id: "f1",
+    question: "Do I need an appointment?",
+    answer:
+      "While walk-ins are welcome, we recommend booking in advance to secure your preferred stylist and time slot. You can book online, by phone, or via WhatsApp.",
+  },
+  {
+    id: "f2",
+    question: "What products do you use?",
+    answer:
+      "We exclusively use Kérastase, Olaplex, and Oribe — premium products trusted by top salons worldwide for exceptional results.",
+  },
+  {
+    id: "f3",
+    question: "Do you offer bridal services?",
+    answer:
+      "Yes! Our bridal packages include a trial session, day-of styling, and touch-ups. We recommend booking 4–6 weeks in advance for the best experience.",
+  },
+  {
+    id: "f4",
+    question: "Where are you located?",
+    answer:
+      "We are in Abdoun, Amman — one of the city's most prestigious districts. Free parking is available for all clients.",
+  },
+  {
+    id: "f5",
+    question: "What are your working hours?",
+    answer:
+      "We are open Sunday through Saturday. Sunday and Saturday from 10:00 AM to 8:00 PM, Monday–Wednesday 9:00 AM to 8:00 PM, Thursday 9:00 AM to 9:00 PM, and Friday from 2:00 PM to 9:00 PM.",
+  },
+  {
+    id: "f6",
+    question: "Do you accept walk-ins?",
+    answer:
+      "Yes, but appointments are highly recommended to ensure availability, especially during peak hours and weekends.",
+  },
+  {
+    id: "f7",
+    question: "What payment methods do you accept?",
+    answer:
+      "We accept cash, all major credit and debit cards, and mobile payments including Apple Pay and mada.",
+  },
+  {
+    id: "f8",
+    question: "Do you have parking?",
+    answer:
+      "Yes, we offer free parking for all clients in our dedicated lot, conveniently located next to the salon.",
+  },
+];
 
 function FAQSchema() {
   const schema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: faqs.map((faq) => ({
+    mainEntity: faqItems.map((faq) => ({
       "@type": "Question",
       name: faq.question,
       acceptedAnswer: {
@@ -33,19 +81,57 @@ function FAQSchema() {
   );
 }
 
-export function FAQContent() {
-  const [search, setSearch] = useState("");
-  const [openItem, setOpenItem] = useState<string>("");
-
-  const filtered = useMemo(
-    () =>
-      faqs.filter(
-        (faq) =>
-          faq.question.toLowerCase().includes(search.toLowerCase()) ||
-          faq.answer.toLowerCase().includes(search.toLowerCase()),
-      ),
-    [search],
+function AccordionItem({
+  item,
+  isOpen,
+  onToggle,
+}: {
+  item: (typeof faqItems)[number];
+  isOpen: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <motion.div variants={fadeUp}>
+      <div
+        className={`rounded-xl border transition-all duration-300 ${
+          isOpen
+            ? "border-primary/30 bg-card shadow-sm"
+            : "border-border/30 bg-card hover:border-border"
+        }`}
+      >
+        <button
+          onClick={onToggle}
+          className="flex w-full items-center justify-between px-5 py-4 text-left text-sm font-medium text-foreground transition-colors hover:text-primary"
+        >
+          <span>{item.question}</span>
+          <ChevronDown
+            className={`size-4 shrink-0 text-muted-foreground transition-transform duration-300 ${
+              isOpen ? "rotate-180 text-primary" : ""
+            }`}
+          />
+        </button>
+        <AnimatePresence initial={false}>
+          {isOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: [0.25, 0.1, 0, 1] }}
+              className="overflow-hidden"
+            >
+              <div className="px-5 pb-4 text-sm leading-relaxed text-muted-foreground">
+                {item.answer}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </motion.div>
   );
+}
+
+export default function FAQContent() {
+  const [openItem, setOpenItem] = useState<string | null>(null);
 
   return (
     <>
@@ -77,70 +163,24 @@ export function FAQContent() {
       </section>
 
       <section className="mx-auto max-w-3xl px-4 py-20 sm:px-6">
-        <div className="relative mb-12">
-          <Search className="absolute left-4 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <input
-            type="text"
-            placeholder="Search questions..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setOpenItem("");
-            }}
-            className="h-12 w-full rounded-xl border border-border bg-background pl-11 pr-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-          />
-        </div>
-
-        <Accordion.Root
-          type="single"
-          collapsible
-          value={openItem}
-          onValueChange={setOpenItem}
+        <motion.div
+          variants={staggerContainerSlow}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
           className="space-y-3"
         >
-          {filtered.length === 0 ? (
-            <div className="py-16 text-center">
-              <HelpCircle className="mx-auto size-8 text-muted-foreground/50" />
-              <p className="mt-4 text-muted-foreground">
-                No questions found for &ldquo;{search}&rdquo;
-              </p>
-              <button
-                onClick={() => setSearch("")}
-                className="mt-2 text-sm font-medium text-primary hover:underline"
-              >
-                Clear search
-              </button>
-            </div>
-          ) : (
-            <motion.div
-              variants={staggerContainerSlow}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-            >
-              {filtered.map((faq) => (
-                <motion.div key={faq.id} variants={fadeUp}>
-                  <Accordion.Item
-                    value={faq.id}
-                    className="group rounded-xl border border-border/30 bg-card transition-all hover:border-border data-[state=open]:border-primary/30 data-[state=open]:shadow-sm"
-                  >
-                    <Accordion.Header className="flex">
-                      <Accordion.Trigger className="flex flex-1 items-center justify-between px-5 py-4 text-left text-sm font-medium text-foreground transition-colors hover:text-primary data-[state=open]:text-primary">
-                        <span>{faq.question}</span>
-                        <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform duration-300 group-data-[state=open]:rotate-180" />
-                      </Accordion.Trigger>
-                    </Accordion.Header>
-                    <Accordion.Content className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
-                      <div className="px-5 pb-4 text-sm leading-relaxed text-muted-foreground">
-                        {faq.answer}
-                      </div>
-                    </Accordion.Content>
-                  </Accordion.Item>
-                </motion.div>
-              ))}
-            </motion.div>
-          )}
-        </Accordion.Root>
+          {faqItems.map((faq) => (
+            <AccordionItem
+              key={faq.id}
+              item={faq}
+              isOpen={openItem === faq.id}
+              onToggle={() =>
+                setOpenItem(openItem === faq.id ? null : faq.id)
+              }
+            />
+          ))}
+        </motion.div>
 
         <div className="mt-16 rounded-2xl border border-border/30 bg-muted/30 p-8 text-center sm:p-10">
           <MessageCircle className="mx-auto size-7 text-primary" />
@@ -154,22 +194,16 @@ export function FAQContent() {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
             <Link
               href="/contact"
-              className={cn(
-                buttonVariants({ variant: "default", size: "default" }),
-                "rounded-full",
-              )}
+              className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition-all hover:bg-primary/80"
             >
               Contact Us
-              <ArrowRight className="ml-1.5 size-3.5" />
+              <ArrowRight className="size-3.5" />
             </Link>
             <a
-              href="https://wa.me/15555550123"
+              href={SITE.social.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className={cn(
-                buttonVariants({ variant: "outline", size: "default" }),
-                "rounded-full",
-              )}
+              className="inline-flex h-9 items-center gap-1.5 rounded-full border border-border bg-background px-5 text-sm font-medium text-foreground transition-all hover:bg-muted"
             >
               WhatsApp Us
             </a>

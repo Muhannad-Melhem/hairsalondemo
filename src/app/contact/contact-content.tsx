@@ -14,9 +14,6 @@ import {
   Mail,
   Clock,
   Send,
-  Camera,
-  Globe,
-  Disc3,
   MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,37 +24,21 @@ const contactSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please enter a valid email address"),
   phone: z.string().min(7, "Please enter a valid phone number"),
-  service: z.string().optional(),
+  subject: z.string().min(2, "Subject is required"),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
 type ContactFormData = z.infer<typeof contactSchema>;
 
-const serviceOptions = [
-  "Women's Haircut",
-  "Men's Haircut",
-  "Blowout & Styling",
-  "Balayage",
-  "Full Highlights",
-  "Single Process Color",
-  "Keratin Treatment",
-  "Scalp Treatment",
-  "Deep Conditioning",
-  "Updo / Special Occasion",
-  "Bridal Package",
-  "Gloss / Toner",
-  "General Inquiry",
-];
-
 function LocalBusinessSchema() {
   const dayMapping: Record<string, string> = {
-    "Mon": "Monday",
-    "Tue": "Tuesday",
-    "Wed": "Wednesday",
-    "Thu": "Thursday",
-    "Fri": "Friday",
-    "Sat": "Saturday",
-    "Sun": "Sunday",
+    Mon: "Monday",
+    Tue: "Tuesday",
+    Wed: "Wednesday",
+    Thu: "Thursday",
+    Fri: "Friday",
+    Sat: "Saturday",
+    Sun: "Sunday",
   };
 
   const schema = {
@@ -79,7 +60,9 @@ function LocalBusinessSchema() {
     },
     openingHoursSpecification: SITE.hours.map((h) => {
       const [open, close] = h.hours.split(" — ");
-      const days = h.day.split(" — ").map((d) => dayMapping[d.trim()] || d.trim());
+      const days = h.day
+        .split(" — ")
+        .map((d) => dayMapping[d.trim()] || d.trim());
       return {
         "@type": "OpeningHoursSpecification",
         dayOfWeek: days,
@@ -93,8 +76,8 @@ function LocalBusinessSchema() {
       SITE.social.tiktok,
     ],
     priceRange: "$$$",
-    areaServed: "Toronto",
-    hasMap: "https://maps.google.com/?q=Luxe+Hair+Studio+Toronto",
+    areaServed: "Amman",
+    hasMap: SITE.address.googleMapsUrl,
   };
 
   return (
@@ -105,7 +88,7 @@ function LocalBusinessSchema() {
   );
 }
 
-export function ContactContent() {
+export default function ContactContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
@@ -157,155 +140,9 @@ export function ContactContent() {
 
       <section className="mx-auto max-w-7xl px-4 py-20 sm:px-6 lg:px-8">
         <div className="grid gap-12 lg:grid-cols-5">
-          <div className="lg:col-span-2">
-            <motion.div
-              variants={slideLeft}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              className="space-y-8"
-            >
-              <div>
-                <h2 className="font-heading text-2xl text-foreground">
-                  Visit Us
-                </h2>
-                <p className="mt-2 text-sm text-muted-foreground">
-                  Located in the heart of Toronto&apos;s King West
-                  neighbourhood.
-                </p>
-              </div>
-
-              <div className="space-y-5">
-                <div className="flex items-start gap-4">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <MapPin className="size-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Address</p>
-                    <p className="text-sm text-muted-foreground">
-                      {SITE.address.street}
-                      <br />
-                      {SITE.address.city}, {SITE.address.region}{" "}
-                      {SITE.address.postcode}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <Phone className="size-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Phone</p>
-                    <a
-                      href={`tel:${SITE.phone}`}
-                      className="text-sm text-muted-foreground transition-colors hover:text-primary"
-                    >
-                      {SITE.phone}
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <Mail className="size-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Email</p>
-                    <a
-                      href={`mailto:${SITE.email}`}
-                      className="text-sm text-muted-foreground transition-colors hover:text-primary"
-                    >
-                      {SITE.email}
-                    </a>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
-                    <Clock className="size-4" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Hours</p>
-                    <div className="space-y-1">
-                      {SITE.hours.map((h) => (
-                        <p key={h.day} className="text-sm text-muted-foreground">
-                          <span className="font-medium text-foreground">
-                            {h.day}
-                          </span>{" "}
-                          — {h.hours}
-                        </p>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <p className="mb-3 text-sm font-medium text-foreground">
-                  Follow Us
-                </p>
-                <div className="flex gap-3">
-                  <a
-                    href={SITE.social.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex size-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-all hover:bg-primary hover:text-primary-foreground"
-                    aria-label="Instagram"
-                  >
-                    <Camera className="size-4" />
-                  </a>
-                  <a
-                    href={SITE.social.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex size-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-all hover:bg-primary hover:text-primary-foreground"
-                    aria-label="Facebook"
-                  >
-                    <Globe className="size-4" />
-                  </a>
-                  <a
-                    href={SITE.social.tiktok}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex size-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-all hover:bg-primary hover:text-primary-foreground"
-                    aria-label="TikTok"
-                  >
-                    <Disc3 className="size-4" />
-                  </a>
-                  <a
-                    href={SITE.social.whatsapp}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex size-10 items-center justify-center rounded-xl bg-muted text-muted-foreground transition-all hover:bg-primary hover:text-primary-foreground"
-                    aria-label="WhatsApp"
-                  >
-                    <MessageCircle className="size-4" />
-                  </a>
-                </div>
-              </div>
-
-              <div className="overflow-hidden rounded-2xl border border-border/30">
-                <div className="aspect-[16/9] w-full bg-muted">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2887.0!2d-79.4!3d43.64!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMzbCsDM4JzI0LjAiTiA3OcKwMjQnMDAuMCJX!5e0!3m2!1sen!2sca!4v1"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Salon Location"
-                    className="h-full w-full"
-                  />
-                </div>
-              </div>
-            </motion.div>
-          </div>
-
           <div className="lg:col-span-3">
             <motion.div
-              variants={slideRight}
+              variants={slideLeft}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
@@ -325,7 +162,10 @@ export function ContactContent() {
               >
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="name" className="mb-1.5 block text-sm font-medium text-foreground">
+                    <label
+                      htmlFor="name"
+                      className="mb-1.5 block text-sm font-medium text-foreground"
+                    >
                       Name <span className="text-destructive">*</span>
                     </label>
                     <input
@@ -336,11 +176,16 @@ export function ContactContent() {
                       placeholder="Your name"
                     />
                     {errors.name && (
-                      <p className="mt-1 text-xs text-destructive">{errors.name.message}</p>
+                      <p className="mt-1 text-xs text-destructive">
+                        {errors.name.message}
+                      </p>
                     )}
                   </div>
                   <div>
-                    <label htmlFor="email" className="mb-1.5 block text-sm font-medium text-foreground">
+                    <label
+                      htmlFor="email"
+                      className="mb-1.5 block text-sm font-medium text-foreground"
+                    >
                       Email <span className="text-destructive">*</span>
                     </label>
                     <input
@@ -351,14 +196,19 @@ export function ContactContent() {
                       placeholder="you@example.com"
                     />
                     {errors.email && (
-                      <p className="mt-1 text-xs text-destructive">{errors.email.message}</p>
+                      <p className="mt-1 text-xs text-destructive">
+                        {errors.email.message}
+                      </p>
                     )}
                   </div>
                 </div>
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label htmlFor="phone" className="mb-1.5 block text-sm font-medium text-foreground">
+                    <label
+                      htmlFor="phone"
+                      className="mb-1.5 block text-sm font-medium text-foreground"
+                    >
                       Phone <span className="text-destructive">*</span>
                     </label>
                     <input
@@ -366,42 +216,54 @@ export function ContactContent() {
                       type="tel"
                       {...register("phone")}
                       className="h-11 w-full rounded-xl border border-input bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                      placeholder="(555) 555-0123"
+                      placeholder="+962 7 9000 1234"
                     />
                     {errors.phone && (
-                      <p className="mt-1 text-xs text-destructive">{errors.phone.message}</p>
+                      <p className="mt-1 text-xs text-destructive">
+                        {errors.phone.message}
+                      </p>
                     )}
                   </div>
                   <div>
-                    <label htmlFor="service" className="mb-1.5 block text-sm font-medium text-foreground">
-                      Service Interest
-                    </label>
-                    <select
-                      id="service"
-                      {...register("service")}
-                      className="h-11 w-full rounded-xl border border-input bg-background px-4 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    <label
+                      htmlFor="subject"
+                      className="mb-1.5 block text-sm font-medium text-foreground"
                     >
-                      <option value="">Select a service...</option>
-                      {serviceOptions.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                      Subject <span className="text-destructive">*</span>
+                    </label>
+                    <input
+                      id="subject"
+                      type="text"
+                      {...register("subject")}
+                      className="h-11 w-full rounded-xl border border-input bg-background px-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                      placeholder="How can we help?"
+                    />
+                    {errors.subject && (
+                      <p className="mt-1 text-xs text-destructive">
+                        {errors.subject.message}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="mb-1.5 block text-sm font-medium text-foreground">
+                  <label
+                    htmlFor="message"
+                    className="mb-1.5 block text-sm font-medium text-foreground"
+                  >
                     Message <span className="text-destructive">*</span>
                   </label>
                   <textarea
                     id="message"
                     rows={5}
                     {...register("message")}
-                    className="w-full rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary resize-y"
+                    className="w-full resize-y rounded-xl border border-input bg-background px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                     placeholder="Tell us about what you're looking for..."
                   />
                   {errors.message && (
-                    <p className="mt-1 text-xs text-destructive">{errors.message.message}</p>
+                    <p className="mt-1 text-xs text-destructive">
+                      {errors.message.message}
+                    </p>
                   )}
                 </div>
 
@@ -424,6 +286,128 @@ export function ContactContent() {
                   )}
                 </Button>
               </form>
+            </motion.div>
+          </div>
+
+          <div className="lg:col-span-2">
+            <motion.div
+              variants={slideRight}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              className="space-y-8"
+            >
+              <div>
+                <h2 className="font-heading text-2xl text-foreground">
+                  Visit Us
+                </h2>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  Located in the heart of Abdoun, Amman.
+                </p>
+              </div>
+
+              <div className="space-y-5">
+                <div className="flex items-start gap-4">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <MapPin className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      Address
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {SITE.address.street}
+                      <br />
+                      {SITE.address.city}, {SITE.address.region}{" "}
+                      {SITE.address.postcode}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Phone className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      Phone
+                    </p>
+                    <a
+                      href={`tel:${SITE.phoneInternational}`}
+                      className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                    >
+                      {SITE.phone}
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Mail className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      Email
+                    </p>
+                    <a
+                      href={`mailto:${SITE.email}`}
+                      className="text-sm text-muted-foreground transition-colors hover:text-primary"
+                    >
+                      {SITE.email}
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-4">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <Clock className="size-4" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-foreground">
+                      Hours
+                    </p>
+                    <div className="space-y-1">
+                      {SITE.hours.map((h) => (
+                        <p
+                          key={h.day}
+                          className="text-sm text-muted-foreground"
+                        >
+                          <span className="font-medium text-foreground">
+                            {h.day}
+                          </span>{" "}
+                          — {h.hours}
+                        </p>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <a
+                href={SITE.social.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-3 rounded-xl bg-[#25D366] px-5 py-3 text-sm font-medium text-white transition-all hover:bg-[#20ba5a]"
+              >
+                <MessageCircle className="size-4" />
+                Chat on WhatsApp
+              </a>
+
+              <div className="overflow-hidden rounded-2xl border border-border/30">
+                <div className="aspect-[16/9] w-full bg-muted">
+                  <iframe
+                    src={SITE.address.googleMapsUrl}
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Salon Location"
+                    className="h-full w-full"
+                  />
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>

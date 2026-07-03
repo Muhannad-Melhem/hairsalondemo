@@ -7,7 +7,6 @@ import { ArrowRight, Clock } from "lucide-react";
 import { formatPrice, formatDuration } from "@/lib/utils";
 import {
   fadeUp,
-  fadeScaleBlur,
   staggerContainer,
   clipReveal,
 } from "@/lib/animation";
@@ -16,8 +15,8 @@ const services = [
   {
     title: "Precision Cut",
     description:
-      "Tailored to your face shape and lifestyle. Every cut is a work of art, executed with surgical precision.",
-    price: 85,
+      "Tailored to your face shape and lifestyle. Every cut is a work of art.",
+    price: 25,
     duration: 60,
     image:
       "https://images.unsplash.com/photo-1707812343087-c9ff9e5abb43?w=600&q=85",
@@ -25,17 +24,17 @@ const services = [
   {
     title: "Color & Balayage",
     description:
-      "From subtle highlights to bold transformations. Our colorists create dimensional, luminous results.",
-    price: 150,
+      "From subtle highlights to bold transformations.",
+    price: 45,
     duration: 120,
     image:
       "https://images.unsplash.com/photo-1605497788044-5a32c7078486?w=600&q=85",
   },
   {
-    title: "Luxury Treatments",
+    title: "Luxury Treatment",
     description:
-      "Deeply restorative treatments that revive, strengthen, and transform your hair from root to tip.",
-    price: 120,
+      "Deeply restorative treatments that revive and strengthen.",
+    price: 35,
     duration: 75,
     image:
       "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=600&q=85",
@@ -43,8 +42,8 @@ const services = [
   {
     title: "Blow-Dry & Styling",
     description:
-      "Perfect blowouts and elegant styling for any occasion. Walk out feeling like the best version of you.",
-    price: 65,
+      "Perfect blowouts and elegant styling for any occasion.",
+    price: 18,
     duration: 45,
     image:
       "https://images.unsplash.com/photo-1595476108010-b4d1f102b1b1?w=600&q=85",
@@ -53,7 +52,7 @@ const services = [
 
 export function ServicesPreview() {
   return (
-    <section aria-label="Our Services" className="py-24 sm:py-32">
+    <section aria-label="Our Services" className="py-32 sm:py-40">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           variants={fadeUp}
@@ -83,7 +82,7 @@ export function ServicesPreview() {
             <motion.article
               key={service.title}
               variants={fadeUp}
-              className="group relative overflow-hidden rounded-2xl border border-border/30 bg-card transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+              className="group relative overflow-hidden rounded-2xl border border-border/20 bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-xl hover:-translate-y-1"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <motion.div
@@ -98,7 +97,7 @@ export function ServicesPreview() {
                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   />
                 </motion.div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
               </div>
               <div className="p-5">
                 <h3 className="font-heading text-lg text-foreground">
